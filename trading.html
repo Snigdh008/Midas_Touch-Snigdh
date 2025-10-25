@@ -14,58 +14,45 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e1b4b 0%, #581c87 50%, #1e1b4b 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
             color: #fff;
             min-height: 100vh;
-            padding: 20px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
+            padding: 12px;
         }
 
         .card {
-            background: rgba(30, 41, 59, 0.6);
+            background: rgba(30, 41, 59, 0.8);
             backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }
 
         .card h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
+            margin-bottom: 16px;
+            font-size: 18px;
             background: linear-gradient(to right, #22d3ee, #a855f7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .grid {
-            display: grid;
-            gap: 24px;
-        }
-
-        .grid-2 {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        }
-
-        .grid-3 {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        }
-
         input, select, textarea {
             width: 100%;
-            padding: 12px;
-            background: rgba(15, 23, 42, 0.8);
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.9);
             border: 1px solid rgba(139, 92, 246, 0.3);
             border-radius: 8px;
             color: #fff;
             font-size: 14px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         input:focus, select:focus, textarea:focus {
@@ -74,7 +61,7 @@
         }
 
         button {
-            padding: 12px 24px;
+            padding: 12px 20px;
             border: none;
             border-radius: 8px;
             font-size: 14px;
@@ -82,6 +69,7 @@
             cursor: pointer;
             transition: all 0.3s;
             width: 100%;
+            margin-bottom: 8px;
         }
 
         button:hover {
@@ -89,29 +77,16 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
 
-        .btn-primary {
-            background: linear-gradient(to right, #a855f7, #22d3ee);
+        button:active {
+            transform: translateY(0);
         }
 
-        .btn-success {
-            background: #10b981;
-        }
-
-        .btn-danger {
-            background: #ef4444;
-        }
-
-        .btn-warning {
-            background: #f59e0b;
-        }
-
-        .btn-info {
-            background: #06b6d4;
-        }
-
-        .btn-purple {
-            background: #9333ea;
-        }
+        .btn-primary { background: linear-gradient(to right, #a855f7, #22d3ee); }
+        .btn-success { background: #10b981; }
+        .btn-danger { background: #ef4444; }
+        .btn-warning { background: #f59e0b; }
+        .btn-info { background: #06b6d4; }
+        .btn-purple { background: #9333ea; }
 
         .notification {
             position: fixed;
@@ -119,9 +94,11 @@
             right: 20px;
             padding: 16px 24px;
             border-radius: 8px;
-            z-index: 1000;
+            z-index: 10000;
             animation: slideIn 0.3s;
-            max-width: 400px;
+            max-width: 350px;
+            font-size: 14px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
 
         .notification.success { background: #10b981; }
@@ -136,11 +113,12 @@
         .news-popup {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 2000;
+            z-index: 9999;
+            padding: 20px;
             animation: fadeIn 0.3s;
         }
 
@@ -149,16 +127,18 @@
             padding: 32px;
             border-radius: 16px;
             max-width: 600px;
-            width: 90%;
+            width: 100%;
             border: 2px solid #22d3ee;
             position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .news-popup-close {
             position: absolute;
             top: 16px;
             right: 16px;
-            background: rgba(239, 68, 68, 0.8);
+            background: #ef4444;
             border: none;
             width: 32px;
             height: 32px;
@@ -166,6 +146,7 @@
             cursor: pointer;
             font-size: 18px;
             color: white;
+            padding: 0;
         }
 
         @keyframes fadeIn {
@@ -177,7 +158,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 80vh;
+            min-height: 100vh;
+            padding: 20px;
         }
 
         .login-card {
@@ -187,8 +169,8 @@
 
         .tabs {
             display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 8px;
+            margin-bottom: 20px;
         }
 
         .tab {
@@ -200,6 +182,7 @@
             color: #fff;
             cursor: pointer;
             font-weight: 600;
+            font-size: 14px;
         }
 
         .tab.active {
@@ -207,21 +190,24 @@
         }
 
         .header {
-            background: rgba(30, 41, 59, 0.6);
+            background: rgba(30, 41, 59, 0.8);
             backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 16px;
         }
 
         .header h1 {
-            font-size: 32px;
+            font-size: 24px;
             background: linear-gradient(to right, #ef4444, #f59e0b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -230,8 +216,8 @@
 
         .status-bar {
             display: flex;
-            gap: 24px;
-            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .status-item {
@@ -239,71 +225,90 @@
         }
 
         .status-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #9ca3af;
             margin-bottom: 4px;
         }
 
         .status-value {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
         }
 
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
         .stock-item {
-            background: rgba(15, 23, 42, 0.6);
-            padding: 16px;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
         }
 
         .stock-name {
             font-weight: 600;
             color: #22d3ee;
+            font-size: 13px;
             margin-bottom: 4px;
         }
 
         .stock-price {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: bold;
             color: #10b981;
-            margin: 8px 0;
+            margin: 6px 0;
         }
 
         .stock-controls {
             display: flex;
-            gap: 8px;
-            margin-top: 12px;
+            gap: 6px;
+            margin-top: 8px;
         }
 
         .stock-controls button {
             flex: 1;
-            padding: 8px;
-            font-size: 12px;
+            padding: 6px;
+            font-size: 11px;
+            margin: 0;
         }
 
         .price-input-group {
             display: flex;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 6px;
+            margin-top: 6px;
         }
 
         .price-input-group input {
             flex: 1;
             margin: 0;
+            padding: 6px;
+            font-size: 12px;
         }
 
         .price-input-group button {
             width: auto;
-            padding: 8px 16px;
+            padding: 6px 12px;
+            margin: 0;
+            font-size: 12px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 13px;
         }
 
         th, td {
-            padding: 12px;
+            padding: 10px;
             text-align: left;
             border-bottom: 1px solid rgba(139, 92, 246, 0.2);
         }
@@ -312,34 +317,16 @@
             background: rgba(15, 23, 42, 0.6);
             font-weight: 600;
             color: #22d3ee;
-        }
-
-        .message-item {
-            background: rgba(15, 23, 42, 0.6);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-
-        .message-header {
-            display: flex;
-            justify-content: space-between;
             font-size: 12px;
-            color: #22d3ee;
-            margin-bottom: 8px;
-        }
-
-        .message-sent {
-            background: rgba(59, 130, 246, 0.3);
         }
 
         .scrollable {
-            max-height: 400px;
+            max-height: 350px;
             overflow-y: auto;
         }
 
         .scrollable::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         .scrollable::-webkit-scrollbar-track {
@@ -352,14 +339,56 @@
             border-radius: 4px;
         }
 
-        .leaderboard-item {
-            background: rgba(15, 23, 42, 0.6);
+        .team-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 14px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .holdings-item {
+            background: rgba(15, 23, 42, 0.7);
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .short-position {
+            border-left: 3px solid #f59e0b;
+        }
+
+        .leaderboard-item {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(139, 92, 246, 0.2);
         }
 
         .leaderboard-item.current-team {
@@ -368,58 +397,54 @@
         }
 
         .rank {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
-            width: 40px;
+            width: 35px;
+            text-align: center;
         }
 
         .rank-1 { color: #fbbf24; }
         .rank-2 { color: #e5e7eb; }
         .rank-3 { color: #fb923c; }
 
-        .holdings-item {
-            background: rgba(15, 23, 42, 0.6);
+        .message-item {
+            background: rgba(15, 23, 42, 0.7);
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 8px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .message-sent {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .message-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-        }
-
-        .short-position {
-            border-left: 4px solid #f59e0b;
-        }
-
-        .portfolio-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: rgba(15, 23, 42, 0.6);
-            padding: 16px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #9ca3af;
+            font-size: 11px;
+            color: #22d3ee;
             margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
         }
 
         .trade-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 8px;
+        }
+
+        .tip-item {
+            background: rgba(245, 158, 11, 0.2);
+            border-left: 3px solid #f59e0b;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .tip-timestamp {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-bottom: 6px;
         }
 
         .market-tips-toggle {
@@ -429,49 +454,146 @@
             align-items: center;
         }
 
-        .tip-item {
-            background: rgba(245, 158, 11, 0.2);
-            border-left: 4px solid #f59e0b;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-
-        .tip-timestamp {
-            font-size: 12px;
-            color: #9ca3af;
-            margin-bottom: 8px;
-        }
-
         .hidden {
             display: none;
         }
 
-        .phase-indicator {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 16px;
         }
 
-        .phase-waiting { background: #6b7280; }
-        .phase-portfolio_allocation { background: #10b981; }
-        .phase-trading { background: #9333ea; }
-        .phase-ended { background: #ef4444; }
+        .stocks-compact {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .stock-compact {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            text-align: center;
+        }
+
+        .stock-compact-name {
+            font-size: 11px;
+            color: #22d3ee;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .stock-compact-price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #10b981;
+        }
+
+        .download-btn {
+            padding: 8px 12px;
+            font-size: 12px;
+            margin-bottom: 12px;
+            width: auto;
+            display: inline-block;
+        }
+
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
 
         @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+
+            .card {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .card h2 {
+                font-size: 16px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .status-bar {
+                gap: 12px;
+            }
+
+            .status-value {
+                font-size: 14px;
+            }
+
+            .team-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 10px;
+            }
+
+            .stat-value {
+                font-size: 16px;
+            }
+
             .grid-2, .grid-3 {
                 grid-template-columns: 1fr;
             }
-            
-            .header {
-                flex-direction: column;
+
+            .stocks-compact {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
-            
+
+            .trade-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .stock-price {
+                font-size: 16px;
+            }
+
+            table {
+                font-size: 11px;
+            }
+
+            th, td {
+                padding: 8px 4px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
             .status-bar {
                 width: 100%;
-                justify-content: space-around;
+                justify-content: space-between;
+            }
+
+            .team-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stocks-compact {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -480,7 +602,7 @@
     <div class="container">
         <div id="loginView" class="login-container">
             <div class="login-card card">
-                <h1 style="text-align: center; margin-bottom: 32px; font-size: 36px; background: linear-gradient(to right, #22d3ee, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <h1 style="text-align: center; margin-bottom: 32px; font-size: 32px; background: linear-gradient(to right, #22d3ee, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                     Mock Stock Trading
                 </h1>
                 
@@ -503,24 +625,26 @@
 
         <div id="adminView" class="hidden">
             <div class="header">
-                <h1>Admin Control Panel</h1>
-                <div class="status-bar">
-                    <div class="status-item">
-                        <div class="status-label">Phase</div>
-                        <div class="status-value" id="adminPhase">WAITING</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">Time</div>
-                        <div class="status-value" id="adminTimer" style="color: #10b981;">0:00</div>
-                    </div>
-                    <div class="status-item" id="adminRoundContainer" style="display: none;">
-                        <div class="status-label">Round</div>
-                        <div class="status-value" id="adminRound" style="color: #a855f7;">0/0</div>
+                <div class="header-content">
+                    <h1>Admin Control Panel</h1>
+                    <div class="status-bar">
+                        <div class="status-item">
+                            <div class="status-label">Phase</div>
+                            <div class="status-value" id="adminPhase">WAITING</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">Time</div>
+                            <div class="status-value" id="adminTimer" style="color: #10b981;">0:00</div>
+                        </div>
+                        <div class="status-item" id="adminRoundContainer" style="display: none;">
+                            <div class="status-label">Round</div>
+                            <div class="status-value" id="adminRound" style="color: #a855f7;">0/0</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-2">
+            <div class="grid-2">
                 <div class="card">
                     <h2>Create Team</h2>
                     <input type="text" id="teamNameInput" placeholder="Team Name">
@@ -530,41 +654,41 @@
 
                 <div class="card">
                     <h2>Game Control</h2>
-                    <label style="display: block; margin-bottom: 8px; color: #9ca3af; font-size: 14px;">Phase Duration (seconds)</label>
+                    <label style="display: block; margin-bottom: 8px; color: #9ca3af; font-size: 12px;">Phase Duration (seconds)</label>
                     <input type="number" id="phaseDurationInput" value="600">
                     <button class="btn-success" onclick="startPhase('portfolio_allocation')">Start Portfolio Allocation</button>
                     
-                    <label style="display: block; margin-top: 16px; margin-bottom: 8px; color: #9ca3af; font-size: 14px;">Trading Rounds</label>
+                    <label style="display: block; margin-top: 12px; margin-bottom: 8px; color: #9ca3af; font-size: 12px;">Trading Rounds</label>
                     <input type="number" id="tradingRoundsInput" value="3">
                     <button class="btn-purple" onclick="startTradingPhase()">Start Trading Phase</button>
                     
-                    <button class="btn-danger" onclick="resetPlatform()" style="margin-top: 16px;">Reset Platform</button>
+                    <button class="btn-danger" onclick="resetPlatform()" style="margin-top: 12px;">Reset Platform</button>
                 </div>
             </div>
 
-            <div class="grid grid-2">
+            <div class="grid-2">
                 <div class="card">
                     <h2>Broadcast News</h2>
                     <input type="text" id="newsTitleInput" placeholder="News Title">
-                    <textarea id="newsContentInput" placeholder="News Content" rows="4"></textarea>
+                    <textarea id="newsContentInput" placeholder="News Content" rows="3"></textarea>
                     <button class="btn-warning" onclick="broadcastNews()">Broadcast News</button>
                 </div>
 
                 <div class="card">
                     <h2>💡 Market Tips</h2>
-                    <textarea id="marketTipInput" placeholder="Market Tip Content" rows="4"></textarea>
+                    <textarea id="marketTipInput" placeholder="Market Tip Content" rows="3"></textarea>
                     <button class="btn-warning" onclick="postMarketTip()">Post Market Tip</button>
                 </div>
             </div>
 
             <div class="card">
                 <h2>Stock Price Control</h2>
-                <div class="grid grid-3" id="adminStockList"></div>
+                <div class="grid-3" id="adminStockList"></div>
             </div>
 
             <div class="card">
                 <h2>Teams Overview</h2>
-                <button class="btn-info" onclick="downloadGeneralTradebook()" style="width: auto; margin-bottom: 16px;">Download General Tradebook</button>
+                <button class="download-btn btn-info" onclick="downloadGeneralTradebook()">📥 Download General Tradebook</button>
                 <div class="scrollable">
                     <table id="teamsTable">
                         <thead>
@@ -572,8 +696,9 @@
                                 <th>Team</th>
                                 <th>Code</th>
                                 <th>Cash</th>
-                                <th>Portfolio Value</th>
+                                <th>Portfolio</th>
                                 <th>P/L</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -589,35 +714,40 @@
 
         <div id="teamView" class="hidden">
             <div class="header">
-                <div>
-                    <h1 id="teamName"></h1>
-                    <div style="font-size: 14px; color: #9ca3af; font-family: monospace;">Code: <span id="teamCode"></span></div>
-                </div>
-                <div class="status-bar">
-                    <div class="status-item">
-                        <div class="status-label">Cash</div>
-                        <div class="status-value" id="teamCash" style="color: #10b981;">₹0</div>
+                <div class="header-content">
+                    <div>
+                        <h1 id="teamName"></h1>
+                        <div style="font-size: 12px; color: #9ca3af; font-family: monospace;">Code: <span id="teamCode"></span></div>
                     </div>
-                    <div class="status-item">
-                        <div class="status-label">Portfolio Value</div>
-                        <div class="status-value" id="teamPortfolio" style="color: #22d3ee;">₹0</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">P/L</div>
-                        <div class="status-value" id="teamPL">₹0</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">Phase</div>
-                        <div class="status-value" id="teamPhase" style="color: #f59e0b;">WAITING</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">⏱ Time</div>
-                        <div class="status-value" id="teamTimer" style="color: #10b981;">0:00</div>
+                    <div class="status-bar">
+                        <div class="status-item">
+                            <div class="status-label">Phase</div>
+                            <div class="status-value" id="teamPhase" style="color: #f59e0b;">WAITING</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">⏱ Time</div>
+                            <div class="status-value" id="teamTimer" style="color: #10b981;">0:00</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+            <div class="team-stats">
+                <div class="stat-card">
+                    <div class="stat-label">Cash</div>
+                    <div class="stat-value" id="teamCash" style="color: #10b981;">₹0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Portfolio Value</div>
+                    <div class="stat-value" id="teamPortfolio" style="color: #22d3ee;">₹0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Profit/Loss</div>
+                    <div class="stat-value" id="teamPL">₹0</div>
+                </div>
+            </div>
+
+            <div class="main-layout">
                 <div>
                     <div id="portfolioAllocationSection" class="card hidden">
                         <h2 style="color: #10b981;">Portfolio Allocation - Buy Only</h2>
@@ -625,7 +755,7 @@
                             <option value="">Select Stock</option>
                         </select>
                         <input type="number" id="portfolioQuantity" placeholder="Quantity" min="1">
-                        <div id="portfolioCost" style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;"></div>
+                        <div id="portfolioCost" style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 13px;"></div>
                         <button class="btn-success" onclick="executeBuy()">Buy Stock</button>
                     </div>
 
@@ -635,7 +765,7 @@
                             <option value="">Select Stock</option>
                         </select>
                         <input type="number" id="tradingQuantity" placeholder="Quantity" min="1">
-                        <div id="tradingInfo" style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;"></div>
+                        <div id="tradingInfo" style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 13px;"></div>
                         
                         <div class="trade-buttons">
                             <button class="btn-success" onclick="executeTrade('buy')">Buy</button>
@@ -644,8 +774,8 @@
                             <button class="btn-info" onclick="executeTrade('cover_short')">Cover Short</button>
                         </div>
 
-                        <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 13px;">
-                            <div style="color: #fbbf24; font-weight: 600; margin-bottom: 8px;">⚠ Short Selling Rules:</div>
+                        <div style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 12px;">
+                            <div style="color: #fbbf24; font-weight: 600; margin-bottom: 6px;">⚠ Short Selling Rules:</div>
                             <div style="color: #d1d5db;">• Maximum short: 100% of remaining cash</div>
                             <div style="color: #d1d5db;">• Short selling increases cash, covering decreases cash</div>
                         </div>
@@ -660,18 +790,28 @@
                     <div class="card">
                         <div class="market-tips-toggle" onclick="toggleMarketTips()">
                             <h2>💡 Market Tips</h2>
-                            <span id="tipsToggleIcon">▼</span>
+                            <span id="tipsToggleIcon" style="font-size: 20px;">▼</span>
                         </div>
                         <div id="marketTipsContent" class="hidden">
                             <div id="marketTipsList" class="scrollable"></div>
                         </div>
                     </div>
+
+                    <div class="card">
+                        <h2>💬 Private Messages</h2>
+                        <select id="messageTargetSelect">
+                            <option value="">Select Team</option>
+                        </select>
+                        <textarea id="messageText" placeholder="Type your message..." rows="2"></textarea>
+                        <button class="btn-info" onclick="sendMessage()">Send Message</button>
+                        <div class="scrollable" id="messagesList" style="margin-top: 12px;"></div>
+                    </div>
                 </div>
 
                 <div>
                     <div class="card">
-                        <h2>Live Prices</h2>
-                        <div class="scrollable" id="liveStockPrices"></div>
+                        <h2>📊 Live Stock Prices</h2>
+                        <div class="stocks-compact" id="liveStockPrices"></div>
                     </div>
 
                     <div class="card">
@@ -683,16 +823,6 @@
                         <h2>📰 News Feed</h2>
                         <div class="scrollable" id="newsFeed"></div>
                     </div>
-
-                    <div class="card">
-                        <h2>💬 Private Messages</h2>
-                        <select id="messageTargetSelect">
-                            <option value="">Select Team</option>
-                        </select>
-                        <textarea id="messageText" placeholder="Type your message..." rows="3"></textarea>
-                        <button class="btn-info" onclick="sendMessage()">Send Message</button>
-                        <div class="scrollable" id="messagesList" style="margin-top: 16px;"></div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -701,12 +831,13 @@
     <div id="newsPopup" class="news-popup hidden">
         <div class="news-popup-content">
             <button class="news-popup-close" onclick="closeNewsPopup()">×</button>
-            <h2 id="popupNewsTitle" style="color: #22d3ee; margin-bottom: 16px;"></h2>
-            <p id="popupNewsContent" style="font-size: 16px; line-height: 1.6;"></p>
-            <p id="popupNewsTime" style="font-size: 12px; color: #9ca3af; margin-top: 16px;"></p>
+            <h2 id="popupNewsTitle" style="color: #22d3ee; margin-bottom: 16px; font-size: 22px;"></h2>
+            <p id="popupNewsContent" style="font-size: 15px; line-height: 1.6;"></p>
+            <p id="popupNewsTime" style="font-size: 11px; color: #9ca3af; margin-top: 16px;"></p>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
     <script>
         const socket = io();
         let currentView = 'login';
@@ -978,6 +1109,14 @@
             });
         }
 
+        function downloadTeamTradebook(teamId, teamName) {
+            socket.emit('download_tradebook', teamId, (response) => {
+                if (response.success) {
+                    downloadCSV(response.csv, `${teamName}_tradebook.csv`);
+                }
+            });
+        }
+
         function downloadCSV(csv, filename) {
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
@@ -1027,13 +1166,31 @@
                         <td style="color: #10b981;">₹${team.cash.toLocaleString()}</td>
                         <td style="color: #a855f7;">₹${portfolioValue.toLocaleString()}</td>
                         <td style="color: ${plColor};">₹${pl.toLocaleString()}</td>
+                        <td><button class="btn-info" style="padding: 6px 12px; font-size: 11px;" onclick="downloadTeamTradebook('${team.id}', '${team.name}')">📥 Download</button></td>
                     </tr>
                 `;
             }).join('');
         }
 
         function updateAdminMessages() {
-            // This will be populated when messages are received
+            const container = document.getElementById('adminMessagesList');
+            socket.emit('get_team_messages', 'admin');
+            
+            socket.on('all_messages', (messages) => {
+                if (messages && messages.length > 0) {
+                    container.innerHTML = messages.map(msg => `
+                        <div class="message-item">
+                            <div class="message-header">
+                                <span style="font-weight: 600; color: #22d3ee;">${msg.fromTeamName} → ${msg.toTeamName}</span>
+                                <span style="color: #9ca3af;">${msg.timestamp}</span>
+                            </div>
+                            <div style="font-size: 13px;">${msg.message}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No messages yet</div>';
+                }
+            });
         }
 
         // Team functions
@@ -1147,7 +1304,7 @@
             const holdings = Object.entries(currentTeam.holdings || {});
             
             if (holdings.length === 0) {
-                holdingsList.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No holdings yet</div>';
+                holdingsList.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 13px;">No holdings yet</div>';
             } else {
                 holdingsList.innerHTML = holdings.map(([symbol, qty]) => {
                     const stock = allStocks.find(s => s.symbol === symbol);
@@ -1155,11 +1312,11 @@
                     return `
                         <div class="holdings-item">
                             <div>
-                                <div style="font-weight: 600; color: #22d3ee;">${stock ? stock.name : symbol}</div>
-                                <div style="font-size: 14px; color: #9ca3af;">Qty: ${qty} @ ₹${stock ? stock.price.toLocaleString() : 0}</div>
+                                <div style="font-weight: 600; color: #22d3ee; font-size: 13px;">${stock ? stock.name : symbol}</div>
+                                <div style="font-size: 12px; color: #9ca3af;">Qty: ${qty} @ ₹${stock ? stock.price.toLocaleString() : 0}</div>
                             </div>
                             <div style="text-align: right;">
-                                <div style="font-weight: bold; color: #10b981;">₹${value.toLocaleString()}</div>
+                                <div style="font-weight: bold; color: #10b981; font-size: 14px;">₹${value.toLocaleString()}</div>
                             </div>
                         </div>
                     `;
@@ -1171,18 +1328,18 @@
             
             if (shortHoldings.length > 0) {
                 shortHoldingsList.innerHTML = `
-                    <h3 style="margin: 24px 0 12px 0; color: #f59e0b; font-size: 18px;">Short Positions</h3>
+                    <h3 style="margin: 20px 0 12px 0; color: #f59e0b; font-size: 16px;">Short Positions</h3>
                     ${shortHoldings.map(([symbol, qty]) => {
                         const stock = allStocks.find(s => s.symbol === symbol);
                         const value = stock ? qty * stock.price : 0;
                         return `
                             <div class="holdings-item short-position">
                                 <div>
-                                    <div style="font-weight: 600; color: #fb923c;">${stock ? stock.name : symbol}</div>
-                                    <div style="font-size: 14px; color: #9ca3af;">Short Qty: ${qty} @ ₹${stock ? stock.price.toLocaleString() : 0}</div>
+                                    <div style="font-weight: 600; color: #fb923c; font-size: 13px;">${stock ? stock.name : symbol}</div>
+                                    <div style="font-size: 12px; color: #9ca3af;">Short Qty: ${qty} @ ₹${stock ? stock.price.toLocaleString() : 0}</div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <div style="font-weight: bold; color: #ef4444;">-₹${value.toLocaleString()}</div>
+                                    <div style="font-weight: bold; color: #ef4444; font-size: 14px;">-₹${value.toLocaleString()}</div>
                                 </div>
                             </div>
                         `;
@@ -1212,16 +1369,9 @@
         function updateLiveStockPrices() {
             const container = document.getElementById('liveStockPrices');
             container.innerHTML = allStocks.map(stock => `
-                <div class="stock-item">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 600; color: #22d3ee;">${stock.name}</div>
-                            <div style="font-size: 12px; color: #9ca3af;">${stock.symbol}</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 18px; font-weight: bold; color: #10b981;">₹${stock.price.toLocaleString()}</div>
-                        </div>
-                    </div>
+                <div class="stock-compact">
+                    <div class="stock-compact-name">${stock.name}</div>
+                    <div class="stock-compact-price">₹${stock.price.toLocaleString()}</div>
                 </div>
             `).join('');
         }
@@ -1239,14 +1389,14 @@
                 
                 return `
                     <div class="leaderboard-item ${isCurrentTeam ? 'current-team' : ''}">
-                        <div style="display: flex; align-items: center; gap: 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
                             <div class="rank ${rankClass}">#{index + 1}</div>
                             <div>
-                                <div style="font-weight: 600;">${team.name}</div>
-                                <div style="font-size: 14px; color: #9ca3af;">₹${value.toLocaleString()}</div>
+                                <div style="font-weight: 600; font-size: 13px;">${team.name}</div>
+                                <div style="font-size: 12px; color: #9ca3af;">₹${value.toLocaleString()}</div>
                             </div>
                         </div>
-                        ${isCurrentTeam ? '<div style="color: #a855f7; font-weight: bold;">YOU</div>' : ''}
+                        ${isCurrentTeam ? '<div style="color: #a855f7; font-weight: bold; font-size: 12px;">YOU</div>' : ''}
                     </div>
                 `;
             }).join('');
@@ -1257,14 +1407,14 @@
             socket.on('game_state', (data) => {
                 if (data.news && data.news.length > 0) {
                     container.innerHTML = data.news.map(item => `
-                        <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
-                            <div style="font-weight: 600; color: #22d3ee; margin-bottom: 4px;">${item.title}</div>
-                            <div style="font-size: 14px; margin-bottom: 8px;">${item.content}</div>
-                            <div style="font-size: 12px; color: #9ca3af;">${item.timestamp}</div>
+                        <div style="background: rgba(15, 23, 42, 0.7); padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(139, 92, 246, 0.2);">
+                            <div style="font-weight: 600; color: #22d3ee; margin-bottom: 4px; font-size: 13px;">${item.title}</div>
+                            <div style="font-size: 12px; margin-bottom: 6px;">${item.content}</div>
+                            <div style="font-size: 11px; color: #9ca3af;">${item.timestamp}</div>
                         </div>
                     `).join('');
                 } else {
-                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No news yet</div>';
+                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 13px;">No news yet</div>';
                 }
             });
         }
@@ -1276,11 +1426,11 @@
                     container.innerHTML = data.marketTips.map(tip => `
                         <div class="tip-item">
                             <div class="tip-timestamp">${tip.timestamp}</div>
-                            <div>${tip.content}</div>
+                            <div style="font-size: 13px;">${tip.content}</div>
                         </div>
                     `).join('');
                 } else {
-                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No market tips available</div>';
+                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 13px;">No market tips available</div>';
                 }
             });
         }
@@ -1301,12 +1451,12 @@
                                     </span>
                                     <span style="color: #9ca3af;">${msg.timestamp}</span>
                                 </div>
-                                <div>${msg.message}</div>
+                                <div style="font-size: 13px;">${msg.message}</div>
                             </div>
                         `;
                     }).join('');
                 } else {
-                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No messages yet</div>';
+                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 13px;">No messages yet</div>';
                 }
             });
         }
@@ -1322,7 +1472,6 @@
             portfolioSelect.innerHTML = '<option value="">Select Stock</option>' + options;
             tradingSelect.innerHTML = '<option value="">Select Stock</option>' + options;
 
-            // Add change listeners
             portfolioSelect.addEventListener('change', updatePortfolioCost);
             tradingSelect.addEventListener('change', updateTradingInfo);
             document.getElementById('portfolioQuantity').addEventListener('input', updatePortfolioCost);
@@ -1347,8 +1496,8 @@
                 const stock = allStocks.find(s => s.symbol === symbol);
                 const cost = stock.price * quantity;
                 container.innerHTML = `
-                    <div style="color: #9ca3af; font-size: 14px; margin-bottom: 4px;">Total Cost</div>
-                    <div style="font-size: 20px; font-weight: bold; color: #22d3ee;">₹${cost.toLocaleString()}</div>
+                    <div style="color: #9ca3af; font-size: 12px; margin-bottom: 4px;">Total Cost</div>
+                    <div style="font-size: 18px; font-weight: bold; color: #22d3ee;">₹${cost.toLocaleString()}</div>
                 `;
             } else {
                 container.innerHTML = '';
@@ -1367,9 +1516,9 @@
                 const shorts = currentTeam.shortHoldings[symbol] || 0;
                 
                 container.innerHTML = `
-                    <div style="color: #9ca3af; font-size: 14px; margin-bottom: 4px;">Total Value</div>
-                    <div style="font-size: 20px; font-weight: bold; color: #22d3ee; margin-bottom: 8px;">₹${value.toLocaleString()}</div>
-                    <div style="font-size: 12px; color: #9ca3af;">
+                    <div style="color: #9ca3af; font-size: 12px; margin-bottom: 4px;">Total Value</div>
+                    <div style="font-size: 18px; font-weight: bold; color: #22d3ee; margin-bottom: 6px;">₹${value.toLocaleString()}</div>
+                    <div style="font-size: 11px; color: #9ca3af;">
                         Holdings: ${holdings} | Short: ${shorts}
                     </div>
                 `;
@@ -1451,7 +1600,6 @@
             document.getElementById('newsPopup').classList.add('hidden');
         }
 
-        // Auto-update admin messages
         socket.on('admin_message', (message) => {
             const container = document.getElementById('adminMessagesList');
             if (container && currentView === 'admin') {
@@ -1462,7 +1610,7 @@
                         <span style="color: #22d3ee;">${message.fromTeamName} → ${message.toTeamName}</span>
                         <span style="color: #9ca3af;">${message.timestamp}</span>
                     </div>
-                    <div>${message.message}</div>
+                    <div style="font-size: 13px;">${message.message}</div>
                 `;
                 container.insertBefore(messageDiv, container.firstChild);
             }
