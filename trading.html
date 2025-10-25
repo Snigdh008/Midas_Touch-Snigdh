@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Stock Trading Platform</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #581c87 50%, #1e1b4b 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            background: linear-gradient(to right, #22d3ee, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #a855f7;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #a855f7, #22d3ee);
+        }
+
+        .btn-success {
+            background: #10b981;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+        }
+
+        .btn-info {
+            background: #06b6d4;
+        }
+
+        .btn-purple {
+            background: #9333ea;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            z-index: 1000;
+            animation: slideIn 0.3s;
+            max-width: 400px;
+        }
+
+        .notification.success { background: #10b981; }
+        .notification.error { background: #ef4444; }
+        .notification.info { background: #06b6d4; }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .news-popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s;
+        }
+
+        .news-popup-content {
+            background: linear-gradient(135deg, #0e7490, #1e40af);
+            padding: 32px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 90%;
+            border: 2px solid #22d3ee;
+            position: relative;
+        }
+
+        .news-popup-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(239, 68, 68, 0.8);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        .login-card {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: #a855f7;
+        }
+
+        .header {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            background: linear-gradient(to right, #ef4444, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 4px;
+        }
+
+        .status-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .stock-item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .stock-name {
+            font-weight: 600;
+            color: #22d3ee;
+            margin-bottom: 4px;
+        }
+
+        .stock-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #10b981;
+            margin: 8px 0;
+        }
+
+        .stock-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .stock-controls button {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .price-input-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .price-input-group input {
+            flex: 1;
+            margin: 0;
+        }
+
+        .price-input-group button {
+            width: auto;
+            padding: 8px 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.6);
+            font-weight: 600;
+            color: #22d3ee;
+        }
+
+        .message-item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #22d3ee;
+            margin-bottom: 8px;
+        }
+
+        .message-sent {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .scrollable {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .scrollable::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollable::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 4px;
+        }
+
+        .scrollable::-webkit-scrollbar-thumb {
+            background: #a855f7;
+            border-radius: 4px;
+        }
+
+        .leaderboard-item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .leaderboard-item.current-team {
+            background: rgba(147, 51, 234, 0.4);
+            border: 2px solid #a855f7;
+        }
+
+        .rank {
+            font-size: 24px;
+            font-weight: bold;
+            width: 40px;
+        }
+
+        .rank-1 { color: #fbbf24; }
+        .rank-2 { color: #e5e7eb; }
+        .rank-3 { color: #fb923c; }
+
+        .holdings-item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .short-position {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .portfolio-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .trade-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .market-tips-toggle {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tip-item {
+            background: rgba(245, 158, 11, 0.2);
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tip-timestamp {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 8px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .phase-indicator {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .phase-waiting { background: #6b7280; }
+        .phase-portfolio_allocation { background: #10b981; }
+        .phase-trading { background: #9333ea; }
+        .phase-ended { background: #ef4444; }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+            }
+            
+            .status-bar {
+                width: 100%;
+                justify-content: space-around;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loginView" class="login-container">
+            <div class="login-card card">
+                <h1 style="text-align: center; margin-bottom: 32px; font-size: 36px; background: linear-gradient(to right, #22d3ee, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    Mock Stock Trading
+                </h1>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="switchLoginTab('team')">Team Login</button>
+                    <button class="tab" onclick="switchLoginTab('admin')">Admin</button>
+                </div>
+
+                <div id="teamLoginForm">
+                    <input type="text" id="joinCodeInput" placeholder="Enter Join Code" maxlength="6" style="text-transform: uppercase;">
+                    <button class="btn-primary" onclick="joinTeam()">Join Team</button>
+                </div>
+
+                <div id="adminLoginForm" class="hidden">
+                    <input type="password" id="adminPasswordInput" placeholder="Admin Password">
+                    <button class="btn-danger" onclick="adminLogin()">Admin Login</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="adminView" class="hidden">
+            <div class="header">
+                <h1>Admin Control Panel</h1>
+                <div class="status-bar">
+                    <div class="status-item">
+                        <div class="status-label">Phase</div>
+                        <div class="status-value" id="adminPhase">WAITING</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Time</div>
+                        <div class="status-value" id="adminTimer" style="color: #10b981;">0:00</div>
+                    </div>
+                    <div class="status-item" id="adminRoundContainer" style="display: none;">
+                        <div class="status-label">Round</div>
+                        <div class="status-value" id="adminRound" style="color: #a855f7;">0/0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <h2>Create Team</h2>
+                    <input type="text" id="teamNameInput" placeholder="Team Name">
+                    <input type="number" id="startingBalanceInput" placeholder="Starting Balance" value="100000">
+                    <button class="btn-info" onclick="createTeam()">Create Team</button>
+                </div>
+
+                <div class="card">
+                    <h2>Game Control</h2>
+                    <label style="display: block; margin-bottom: 8px; color: #9ca3af; font-size: 14px;">Phase Duration (seconds)</label>
+                    <input type="number" id="phaseDurationInput" value="600">
+                    <button class="btn-success" onclick="startPhase('portfolio_allocation')">Start Portfolio Allocation</button>
+                    
+                    <label style="display: block; margin-top: 16px; margin-bottom: 8px; color: #9ca3af; font-size: 14px;">Trading Rounds</label>
+                    <input type="number" id="tradingRoundsInput" value="3">
+                    <button class="btn-purple" onclick="startTradingPhase()">Start Trading Phase</button>
+                    
+                    <button class="btn-danger" onclick="resetPlatform()" style="margin-top: 16px;">Reset Platform</button>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <h2>Broadcast News</h2>
+                    <input type="text" id="newsTitleInput" placeholder="News Title">
+                    <textarea id="newsContentInput" placeholder="News Content" rows="4"></textarea>
+                    <button class="btn-warning" onclick="broadcastNews()">Broadcast News</button>
+                </div>
+
+                <div class="card">
+                    <h2>💡 Market Tips</h2>
+                    <textarea id="marketTipInput" placeholder="Market Tip Content" rows="4"></textarea>
+                    <button class="btn-warning" onclick="postMarketTip()">Post Market Tip</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Stock Price Control</h2>
+                <div class="grid grid-3" id="adminStockList"></div>
+            </div>
+
+            <div class="card">
+                <h2>Teams Overview</h2>
+                <button class="btn-info" onclick="downloadGeneralTradebook()" style="width: auto; margin-bottom: 16px;">Download General Tradebook</button>
+                <div class="scrollable">
+                    <table id="teamsTable">
+                        <thead>
+                            <tr>
+                                <th>Team</th>
+                                <th>Code</th>
+                                <th>Cash</th>
+                                <th>Portfolio Value</th>
+                                <th>P/L</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>All Private Messages</h2>
+                <div class="scrollable" id="adminMessagesList"></div>
+            </div>
+        </div>
+
+        <div id="teamView" class="hidden">
+            <div class="header">
+                <div>
+                    <h1 id="teamName"></h1>
+                    <div style="font-size: 14px; color: #9ca3af; font-family: monospace;">Code: <span id="teamCode"></span></div>
+                </div>
+                <div class="status-bar">
+                    <div class="status-item">
+                        <div class="status-label">Cash</div>
+                        <div class="status-value" id="teamCash" style="color: #10b981;">₹0</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Portfolio Value</div>
+                        <div class="status-value" id="teamPortfolio" style="color: #22d3ee;">₹0</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">P/L</div>
+                        <div class="status-value" id="teamPL">₹0</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Phase</div>
+                        <div class="status-value" id="teamPhase" style="color: #f59e0b;">WAITING</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">⏱ Time</div>
+                        <div class="status-value" id="teamTimer" style="color: #10b981;">0:00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                <div>
+                    <div id="portfolioAllocationSection" class="card hidden">
+                        <h2 style="color: #10b981;">Portfolio Allocation - Buy Only</h2>
+                        <select id="portfolioStockSelect">
+                            <option value="">Select Stock</option>
+                        </select>
+                        <input type="number" id="portfolioQuantity" placeholder="Quantity" min="1">
+                        <div id="portfolioCost" style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;"></div>
+                        <button class="btn-success" onclick="executeBuy()">Buy Stock</button>
+                    </div>
+
+                    <div id="tradingSection" class="card hidden">
+                        <h2 style="color: #9333ea;">Trading - Full Access</h2>
+                        <select id="tradingStockSelect">
+                            <option value="">Select Stock</option>
+                        </select>
+                        <input type="number" id="tradingQuantity" placeholder="Quantity" min="1">
+                        <div id="tradingInfo" style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;"></div>
+                        
+                        <div class="trade-buttons">
+                            <button class="btn-success" onclick="executeTrade('buy')">Buy</button>
+                            <button class="btn-danger" onclick="executeTrade('sell')">Sell</button>
+                            <button class="btn-warning" onclick="executeTrade('short_sell')">Short Sell</button>
+                            <button class="btn-info" onclick="executeTrade('cover_short')">Cover Short</button>
+                        </div>
+
+                        <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 13px;">
+                            <div style="color: #fbbf24; font-weight: 600; margin-bottom: 8px;">⚠ Short Selling Rules:</div>
+                            <div style="color: #d1d5db;">• Maximum short: 100% of remaining cash</div>
+                            <div style="color: #d1d5db;">• Short selling increases cash, covering decreases cash</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>Current Holdings</h2>
+                        <div id="holdingsList"></div>
+                        <div id="shortHoldingsList"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="market-tips-toggle" onclick="toggleMarketTips()">
+                            <h2>💡 Market Tips</h2>
+                            <span id="tipsToggleIcon">▼</span>
+                        </div>
+                        <div id="marketTipsContent" class="hidden">
+                            <div id="marketTipsList" class="scrollable"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card">
+                        <h2>Live Prices</h2>
+                        <div class="scrollable" id="liveStockPrices"></div>
+                    </div>
+
+                    <div class="card">
+                        <h2>🏆 Leaderboard</h2>
+                        <div class="scrollable" id="leaderboard"></div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📰 News Feed</h2>
+                        <div class="scrollable" id="newsFeed"></div>
+                    </div>
+
+                    <div class="card">
+                        <h2>💬 Private Messages</h2>
+                        <select id="messageTargetSelect">
+                            <option value="">Select Team</option>
+                        </select>
+                        <textarea id="messageText" placeholder="Type your message..." rows="3"></textarea>
+                        <button class="btn-info" onclick="sendMessage()">Send Message</button>
+                        <div class="scrollable" id="messagesList" style="margin-top: 16px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="newsPopup" class="news-popup hidden">
+        <div class="news-popup-content">
+            <button class="news-popup-close" onclick="closeNewsPopup()">×</button>
+            <h2 id="popupNewsTitle" style="color: #22d3ee; margin-bottom: 16px;"></h2>
+            <p id="popupNewsContent" style="font-size: 16px; line-height: 1.6;"></p>
+            <p id="popupNewsTime" style="font-size: 12px; color: #9ca3af; margin-top: 16px;"></p>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let currentView = 'login';
+        let currentTeam = null;
+        let allStocks = [];
+        let allTeams = [];
+        let gameConfig = {};
+
+        // Socket event listeners
+        socket.on('game_state', (data) => {
+            allStocks = data.stocks;
+            allTeams = data.teams;
+            gameConfig = data.gameConfig;
+            
+            if (currentView === 'admin') {
+                updateAdminView();
+            } else if (currentView === 'team') {
+                updateTeamView();
+            }
+        });
+
+        socket.on('team_created', (team) => {
+            allTeams.push(team);
+            if (currentView === 'admin') {
+                updateAdminView();
+            }
+            showNotification(`Team "${team.name}" created with code: ${team.joinCode}`, 'success');
+        });
+
+        socket.on('stock_price_update', (data) => {
+            const stock = allStocks.find(s => s.symbol === data.symbol);
+            if (stock) {
+                stock.price = data.price;
+                if (currentView === 'admin') {
+                    updateAdminStocks();
+                } else if (currentView === 'team') {
+                    updateLiveStockPrices();
+                    updateTradingInfo();
+                }
+            }
+        });
+
+        socket.on('stocks_update', (stocks) => {
+            allStocks = stocks;
+            if (currentView === 'admin') {
+                updateAdminStocks();
+            } else if (currentView === 'team') {
+                updateLiveStockPrices();
+            }
+        });
+
+        socket.on('news_broadcast', (news) => {
+            showNewsPopup(news);
+            if (currentView === 'team') {
+                updateNewsFeed();
+            }
+        });
+
+        socket.on('market_tip_posted', (tip) => {
+            if (currentView === 'team') {
+                updateMarketTips();
+            }
+            showNotification('New market tip posted', 'info');
+        });
+
+        socket.on('phase_change', (config) => {
+            gameConfig = config;
+            updatePhaseDisplay();
+            if (currentView === 'team') {
+                updateTradingInterface();
+            }
+        });
+
+        socket.on('timer_update', (config) => {
+            gameConfig = config;
+            updateTimerDisplay();
+        });
+
+        socket.on('trade_executed', (trade) => {
+            if (currentView === 'team' && currentTeam && trade.teamId === currentTeam.id) {
+                socket.emit('team_join', currentTeam.joinCode, (response) => {
+                    if (response.success) {
+                        currentTeam = response.team;
+                        updateTeamView();
+                    }
+                });
+            }
+            if (currentView === 'admin') {
+                updateAdminView();
+            }
+        });
+
+        socket.on('team_updated', (team) => {
+            const index = allTeams.findIndex(t => t.id === team.id);
+            if (index !== -1) {
+                allTeams[index] = team;
+            }
+            if (currentView === 'admin') {
+                updateTeamsTable();
+            }
+        });
+
+        socket.on('leaderboard_update', (leaderboard) => {
+            if (currentView === 'team') {
+                updateLeaderboard();
+            }
+        });
+
+        socket.on('new_message', (message) => {
+            if (currentView === 'team') {
+                updateMessages();
+            }
+        });
+
+        socket.on('admin_message', (message) => {
+            if (currentView === 'admin') {
+                updateAdminMessages();
+            }
+        });
+
+        socket.on('all_messages', (messages) => {
+            if (currentView === 'admin') {
+                updateAdminMessages();
+            }
+        });
+
+        socket.on('team_messages', (messages) => {
+            if (currentView === 'team') {
+                updateMessages();
+            }
+        });
+
+        socket.on('platform_reset', () => {
+            showNotification('Platform has been reset', 'info');
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        });
+
+        // Login functions
+        function switchLoginTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'team') {
+                document.getElementById('teamLoginForm').classList.remove('hidden');
+                document.getElementById('adminLoginForm').classList.add('hidden');
+            } else {
+                document.getElementById('teamLoginForm').classList.add('hidden');
+                document.getElementById('adminLoginForm').classList.remove('hidden');
+            }
+        }
+
+        function adminLogin() {
+            const password = document.getElementById('adminPasswordInput').value;
+            socket.emit('admin_login', password, (response) => {
+                if (response.success) {
+                    currentView = 'admin';
+                    document.getElementById('loginView').classList.add('hidden');
+                    document.getElementById('adminView').classList.remove('hidden');
+                    updateAdminView();
+                    showNotification('Admin access granted', 'success');
+                } else {
+                    showNotification('Invalid admin password', 'error');
+                }
+            });
+        }
+
+        function joinTeam() {
+            const joinCode = document.getElementById('joinCodeInput').value.toUpperCase();
+            socket.emit('team_join', joinCode, (response) => {
+                if (response.success) {
+                    currentTeam = response.team;
+                    currentView = 'team';
+                    document.getElementById('loginView').classList.add('hidden');
+                    document.getElementById('teamView').classList.remove('hidden');
+                    updateTeamView();
+                    showNotification(`Joined team: ${currentTeam.name}`, 'success');
+                } else {
+                    showNotification('Invalid join code', 'error');
+                }
+            });
+        }
+
+        // Admin functions
+        function createTeam() {
+            const name = document.getElementById('teamNameInput').value;
+            const balance = parseFloat(document.getElementById('startingBalanceInput').value);
+            
+            if (!name || !balance) {
+                showNotification('Please enter team name and balance', 'error');
+                return;
+            }
+
+            socket.emit('create_team', { name, startingBalance: balance }, (response) => {
+                if (response.success) {
+                    document.getElementById('teamNameInput').value = '';
+                    document.getElementById('startingBalanceInput').value = '100000';
+                }
+            });
+        }
+
+        function startPhase(phase) {
+            const duration = parseInt(document.getElementById('phaseDurationInput').value);
+            socket.emit('start_phase', { phase, duration, rounds: 0 });
+        }
+
+        function startTradingPhase() {
+            const duration = parseInt(document.getElementById('phaseDurationInput').value);
+            const rounds = parseInt(document.getElementById('tradingRoundsInput').value);
+            socket.emit('start_phase', { phase: 'trading', duration, rounds });
+        }
+
+        function updateStockPrice(symbol, adjustment) {
+            const stock = allStocks.find(s => s.symbol === symbol);
+            if (stock) {
+                const newPrice = Math.max(1, stock.price + adjustment);
+                socket.emit('update_stock_price', { symbol, price: newPrice });
+            }
+        }
+
+        function setStockPrice(symbol) {
+            const input = document.getElementById(`price_${symbol}`);
+            const newPrice = parseFloat(input.value);
+            if (newPrice && newPrice > 0) {
+                socket.emit('update_stock_price', { symbol, price: newPrice });
+                input.value = '';
+            }
+        }
+
+        function broadcastNews() {
+            const title = document.getElementById('newsTitleInput').value;
+            const content = document.getElementById('newsContentInput').value;
+            
+            if (!title || !content) {
+                showNotification('Please enter news title and content', 'error');
+                return;
+            }
+
+            socket.emit('broadcast_news', { title, content });
+            document.getElementById('newsTitleInput').value = '';
+            document.getElementById('newsContentInput').value = '';
+        }
+
+        function postMarketTip() {
+            const content = document.getElementById('marketTipInput').value;
+            
+            if (!content) {
+                showNotification('Please enter tip content', 'error');
+                return;
+            }
+
+            socket.emit('post_market_tip', { content });
+            document.getElementById('marketTipInput').value = '';
+        }
+
+        function resetPlatform() {
+            if (confirm('Are you sure you want to reset the entire platform? This cannot be undone.')) {
+                socket.emit('reset_platform');
+            }
+        }
+
+        function downloadGeneralTradebook() {
+            socket.emit('download_tradebook', null, (response) => {
+                if (response.success) {
+                    downloadCSV(response.csv, 'general_tradebook.csv');
+                }
+            });
+        }
+
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function updateAdminView() {
+            updateAdminStocks();
+            updateTeamsTable();
+            updatePhaseDisplay();
+            updateTimerDisplay();
+        }
+
+        function updateAdminStocks() {
+            const container = document.getElementById('adminStockList');
+            container.innerHTML = allStocks.map(stock => `
+                <div class="stock-item">
+                    <div class="stock-name">${stock.name}</div>
+                    <div class="stock-price">₹${stock.price.toLocaleString()}</div>
+                    <div class="stock-controls">
+                        <button class="btn-danger" onclick="updateStockPrice('${stock.symbol}', -50)">-₹50</button>
+                        <button class="btn-success" onclick="updateStockPrice('${stock.symbol}', 50)">+₹50</button>
+                    </div>
+                    <div class="price-input-group">
+                        <input type="number" id="price_${stock.symbol}" placeholder="New price">
+                        <button class="btn-info" onclick="setStockPrice('${stock.symbol}')">Set</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateTeamsTable() {
+            const tbody = document.querySelector('#teamsTable tbody');
+            tbody.innerHTML = allTeams.map(team => {
+                const portfolioValue = calculatePortfolioValue(team);
+                const pl = portfolioValue - team.startingBalance;
+                const plColor = pl >= 0 ? '#10b981' : '#ef4444';
+                
+                return `
+                    <tr>
+                        <td>${team.name}</td>
+                        <td style="font-family: monospace; color: #22d3ee;">${team.joinCode}</td>
+                        <td style="color: #10b981;">₹${team.cash.toLocaleString()}</td>
+                        <td style="color: #a855f7;">₹${portfolioValue.toLocaleString()}</td>
+                        <td style="color: ${plColor};">₹${pl.toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateAdminMessages() {
+            // This will be populated when messages are received
+        }
+
+        // Team functions
+        function executeBuy() {
+            const symbol = document.getElementById('portfolioStockSelect').value;
+            const quantity = parseInt(document.getElementById('portfolioQuantity').value);
+            
+            if (!symbol || !quantity) {
+                showNotification('Please select stock and quantity', 'error');
+                return;
+            }
+
+            const stock = allStocks.find(s => s.symbol === symbol);
+            executeTrade('buy', symbol, quantity, stock.price);
+        }
+
+        function executeTrade(action, symbolOverride, quantityOverride, priceOverride) {
+            let symbol, quantity;
+            
+            if (symbolOverride) {
+                symbol = symbolOverride;
+                quantity = quantityOverride;
+            } else {
+                symbol = document.getElementById('tradingStockSelect').value;
+                quantity = parseInt(document.getElementById('tradingQuantity').value);
+            }
+            
+            if (!symbol || !quantity) {
+                showNotification('Please select stock and quantity', 'error');
+                return;
+            }
+
+            const stock = allStocks.find(s => s.symbol === symbol);
+            const price = priceOverride || stock.price;
+
+            socket.emit('execute_trade', {
+                teamId: currentTeam.id,
+                action,
+                symbol,
+                quantity,
+                price
+            }, (response) => {
+                if (response.success) {
+                    currentTeam = response.team;
+                    updateTeamView();
+                    if (action === 'buy') {
+                        document.getElementById('portfolioQuantity').value = '';
+                    } else {
+                        document.getElementById('tradingQuantity').value = '';
+                    }
+                } else {
+                    showNotification(response.error, 'error');
+                }
+            });
+        }
+
+        function sendMessage() {
+            const toTeamId = document.getElementById('messageTargetSelect').value;
+            const message = document.getElementById('messageText').value;
+            
+            if (!toTeamId || !message) {
+                showNotification('Please select team and enter message', 'error');
+                return;
+            }
+
+            socket.emit('send_message', {
+                fromTeamId: currentTeam.id,
+                toTeamId,
+                message
+            });
+
+            document.getElementById('messageText').value = '';
+        }
+
+        function toggleMarketTips() {
+            const content = document.getElementById('marketTipsContent');
+            const icon = document.getElementById('tipsToggleIcon');
+            content.classList.toggle('hidden');
+            icon.textContent = content.classList.contains('hidden') ? '▼' : '▲';
+        }
+
+        function updateTeamView() {
+            document.getElementById('teamName').textContent = currentTeam.name;
+            document.getElementById('teamCode').textContent = currentTeam.joinCode;
+            updateTeamStats();
+            updateHoldings();
+            updateTradingInterface();
+            updateLiveStockPrices();
+            populateStockSelects();
+            populateTeamSelect();
+            updateLeaderboard();
+            updateNewsFeed();
+            updateMarketTips();
+            updateMessages();
+        }
+
+        function updateTeamStats() {
+            const portfolioValue = calculatePortfolioValue(currentTeam);
+            const pl = portfolioValue - currentTeam.startingBalance;
+            
+            document.getElementById('teamCash').textContent = `₹${currentTeam.cash.toLocaleString()}`;
+            document.getElementById('teamPortfolio').textContent = `₹${portfolioValue.toLocaleString()}`;
+            
+            const plElement = document.getElementById('teamPL');
+            plElement.textContent = `₹${pl.toLocaleString()}`;
+            plElement.style.color = pl >= 0 ? '#10b981' : '#ef4444';
+        }
+
+        function updateHoldings() {
+            const holdingsList = document.getElementById('holdingsList');
+            const holdings = Object.entries(currentTeam.holdings || {});
+            
+            if (holdings.length === 0) {
+                holdingsList.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No holdings yet</div>';
+            } else {
+                holdingsList.innerHTML = holdings.map(([symbol, qty]) => {
+                    const stock = allStocks.find(s => s.symbol === symbol);
+                    const value = stock ? qty * stock.price : 0;
+                    return `
+                        <div class="holdings-item">
+                            <div>
+                                <div style="font-weight: 600; color: #22d3ee;">${stock ? stock.name : symbol}</div>
+                                <div style="font-size: 14px; color: #9ca3af;">Qty: ${qty} @ ₹${stock ? stock.price.toLocaleString() : 0}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: bold; color: #10b981;">₹${value.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const shortHoldingsList = document.getElementById('shortHoldingsList');
+            const shortHoldings = Object.entries(currentTeam.shortHoldings || {});
+            
+            if (shortHoldings.length > 0) {
+                shortHoldingsList.innerHTML = `
+                    <h3 style="margin: 24px 0 12px 0; color: #f59e0b; font-size: 18px;">Short Positions</h3>
+                    ${shortHoldings.map(([symbol, qty]) => {
+                        const stock = allStocks.find(s => s.symbol === symbol);
+                        const value = stock ? qty * stock.price : 0;
+                        return `
+                            <div class="holdings-item short-position">
+                                <div>
+                                    <div style="font-weight: 600; color: #fb923c;">${stock ? stock.name : symbol}</div>
+                                    <div style="font-size: 14px; color: #9ca3af;">Short Qty: ${qty} @ ₹${stock ? stock.price.toLocaleString() : 0}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: bold; color: #ef4444;">-₹${value.toLocaleString()}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                `;
+            } else {
+                shortHoldingsList.innerHTML = '';
+            }
+        }
+
+        function updateTradingInterface() {
+            const portfolioSection = document.getElementById('portfolioAllocationSection');
+            const tradingSection = document.getElementById('tradingSection');
+            
+            if (gameConfig.phase === 'portfolio_allocation') {
+                portfolioSection.classList.remove('hidden');
+                tradingSection.classList.add('hidden');
+            } else if (gameConfig.phase === 'trading') {
+                portfolioSection.classList.add('hidden');
+                tradingSection.classList.remove('hidden');
+            } else {
+                portfolioSection.classList.add('hidden');
+                tradingSection.classList.add('hidden');
+            }
+        }
+
+        function updateLiveStockPrices() {
+            const container = document.getElementById('liveStockPrices');
+            container.innerHTML = allStocks.map(stock => `
+                <div class="stock-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; color: #22d3ee;">${stock.name}</div>
+                            <div style="font-size: 12px; color: #9ca3af;">${stock.symbol}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 18px; font-weight: bold; color: #10b981;">₹${stock.price.toLocaleString()}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateLeaderboard() {
+            const container = document.getElementById('leaderboard');
+            const sortedTeams = [...allTeams].sort((a, b) => 
+                calculatePortfolioValue(b) - calculatePortfolioValue(a)
+            );
+
+            container.innerHTML = sortedTeams.map((team, index) => {
+                const value = calculatePortfolioValue(team);
+                const isCurrentTeam = currentTeam && team.id === currentTeam.id;
+                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+                
+                return `
+                    <div class="leaderboard-item ${isCurrentTeam ? 'current-team' : ''}">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div class="rank ${rankClass}">#{index + 1}</div>
+                            <div>
+                                <div style="font-weight: 600;">${team.name}</div>
+                                <div style="font-size: 14px; color: #9ca3af;">₹${value.toLocaleString()}</div>
+                            </div>
+                        </div>
+                        ${isCurrentTeam ? '<div style="color: #a855f7; font-weight: bold;">YOU</div>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateNewsFeed() {
+            const container = document.getElementById('newsFeed');
+            socket.on('game_state', (data) => {
+                if (data.news && data.news.length > 0) {
+                    container.innerHTML = data.news.map(item => `
+                        <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                            <div style="font-weight: 600; color: #22d3ee; margin-bottom: 4px;">${item.title}</div>
+                            <div style="font-size: 14px; margin-bottom: 8px;">${item.content}</div>
+                            <div style="font-size: 12px; color: #9ca3af;">${item.timestamp}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No news yet</div>';
+                }
+            });
+        }
+
+        function updateMarketTips() {
+            const container = document.getElementById('marketTipsList');
+            socket.on('game_state', (data) => {
+                if (data.marketTips && data.marketTips.length > 0) {
+                    container.innerHTML = data.marketTips.map(tip => `
+                        <div class="tip-item">
+                            <div class="tip-timestamp">${tip.timestamp}</div>
+                            <div>${tip.content}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No market tips available</div>';
+                }
+            });
+        }
+
+        function updateMessages() {
+            const container = document.getElementById('messagesList');
+            socket.emit('get_team_messages', currentTeam.id);
+            
+            socket.on('team_messages', (messages) => {
+                if (messages && messages.length > 0) {
+                    container.innerHTML = messages.map(msg => {
+                        const isSent = msg.fromTeamId === currentTeam.id;
+                        return `
+                            <div class="message-item ${isSent ? 'message-sent' : ''}">
+                                <div class="message-header">
+                                    <span style="font-weight: 600; color: #22d3ee;">
+                                        ${isSent ? 'You' : msg.fromTeamName} → ${msg.toTeamId === currentTeam.id ? 'You' : msg.toTeamName}
+                                    </span>
+                                    <span style="color: #9ca3af;">${msg.timestamp}</span>
+                                </div>
+                                <div>${msg.message}</div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No messages yet</div>';
+                }
+            });
+        }
+
+        function populateStockSelects() {
+            const portfolioSelect = document.getElementById('portfolioStockSelect');
+            const tradingSelect = document.getElementById('tradingStockSelect');
+            
+            const options = allStocks.map(stock => 
+                `<option value="${stock.symbol}">${stock.name} - ₹${stock.price.toLocaleString()}</option>`
+            ).join('');
+            
+            portfolioSelect.innerHTML = '<option value="">Select Stock</option>' + options;
+            tradingSelect.innerHTML = '<option value="">Select Stock</option>' + options;
+
+            // Add change listeners
+            portfolioSelect.addEventListener('change', updatePortfolioCost);
+            tradingSelect.addEventListener('change', updateTradingInfo);
+            document.getElementById('portfolioQuantity').addEventListener('input', updatePortfolioCost);
+            document.getElementById('tradingQuantity').addEventListener('input', updateTradingInfo);
+        }
+
+        function populateTeamSelect() {
+            const select = document.getElementById('messageTargetSelect');
+            const options = allTeams
+                .filter(team => team.id !== currentTeam.id)
+                .map(team => `<option value="${team.id}">${team.name}</option>`)
+                .join('');
+            select.innerHTML = '<option value="">Select Team</option>' + options;
+        }
+
+        function updatePortfolioCost() {
+            const symbol = document.getElementById('portfolioStockSelect').value;
+            const quantity = parseInt(document.getElementById('portfolioQuantity').value) || 0;
+            const container = document.getElementById('portfolioCost');
+            
+            if (symbol && quantity) {
+                const stock = allStocks.find(s => s.symbol === symbol);
+                const cost = stock.price * quantity;
+                container.innerHTML = `
+                    <div style="color: #9ca3af; font-size: 14px; margin-bottom: 4px;">Total Cost</div>
+                    <div style="font-size: 20px; font-weight: bold; color: #22d3ee;">₹${cost.toLocaleString()}</div>
+                `;
+            } else {
+                container.innerHTML = '';
+            }
+        }
+
+        function updateTradingInfo() {
+            const symbol = document.getElementById('tradingStockSelect').value;
+            const quantity = parseInt(document.getElementById('tradingQuantity').value) || 0;
+            const container = document.getElementById('tradingInfo');
+            
+            if (symbol && quantity) {
+                const stock = allStocks.find(s => s.symbol === symbol);
+                const value = stock.price * quantity;
+                const holdings = currentTeam.holdings[symbol] || 0;
+                const shorts = currentTeam.shortHoldings[symbol] || 0;
+                
+                container.innerHTML = `
+                    <div style="color: #9ca3af; font-size: 14px; margin-bottom: 4px;">Total Value</div>
+                    <div style="font-size: 20px; font-weight: bold; color: #22d3ee; margin-bottom: 8px;">₹${value.toLocaleString()}</div>
+                    <div style="font-size: 12px; color: #9ca3af;">
+                        Holdings: ${holdings} | Short: ${shorts}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '';
+            }
+        }
+
+        function calculatePortfolioValue(team) {
+            let value = team.cash;
+            
+            Object.entries(team.holdings || {}).forEach(([symbol, qty]) => {
+                const stock = allStocks.find(s => s.symbol === symbol);
+                if (stock) value += qty * stock.price;
+            });
+            
+            Object.entries(team.shortHoldings || {}).forEach(([symbol, qty]) => {
+                const stock = allStocks.find(s => s.symbol === symbol);
+                if (stock) value -= qty * stock.price;
+            });
+            
+            return value;
+        }
+
+        function updatePhaseDisplay() {
+            const adminPhase = document.getElementById('adminPhase');
+            const teamPhase = document.getElementById('teamPhase');
+            const phaseName = gameConfig.phase.replace('_', ' ').toUpperCase();
+            
+            if (adminPhase) adminPhase.textContent = phaseName;
+            if (teamPhase) teamPhase.textContent = phaseName;
+
+            const adminRoundContainer = document.getElementById('adminRoundContainer');
+            if (gameConfig.phase === 'trading') {
+                if (adminRoundContainer) {
+                    adminRoundContainer.style.display = 'block';
+                    document.getElementById('adminRound').textContent = `${gameConfig.currentRound}/${gameConfig.totalRounds}`;
+                }
+            } else {
+                if (adminRoundContainer) adminRoundContainer.style.display = 'none';
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(gameConfig.timeRemaining / 60);
+            const seconds = gameConfig.timeRemaining % 60;
+            const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const adminTimer = document.getElementById('adminTimer');
+            const teamTimer = document.getElementById('teamTimer');
+            
+            if (adminTimer) adminTimer.textContent = timeStr;
+            if (teamTimer) teamTimer.textContent = timeStr;
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function showNewsPopup(news) {
+            document.getElementById('popupNewsTitle').textContent = news.title;
+            document.getElementById('popupNewsContent').textContent = news.content;
+            document.getElementById('popupNewsTime').textContent = news.timestamp;
+            document.getElementById('newsPopup').classList.remove('hidden');
+            
+            setTimeout(() => {
+                closeNewsPopup();
+            }, 11000);
+        }
+
+        function closeNewsPopup() {
+            document.getElementById('newsPopup').classList.add('hidden');
+        }
+
+        // Auto-update admin messages
+        socket.on('admin_message', (message) => {
+            const container = document.getElementById('adminMessagesList');
+            if (container && currentView === 'admin') {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-item';
+                messageDiv.innerHTML = `
+                    <div class="message-header">
+                        <span style="color: #22d3ee;">${message.fromTeamName} → ${message.toTeamName}</span>
+                        <span style="color: #9ca3af;">${message.timestamp}</span>
+                    </div>
+                    <div>${message.message}</div>
+                `;
+                container.insertBefore(messageDiv, container.firstChild);
+            }
+        });
+    </script>
+</body>
+</html>
