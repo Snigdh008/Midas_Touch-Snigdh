@@ -502,6 +502,72 @@
             display: inline-block;
         }
 
+        .toggle-section {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            font-size: 12px;
+            width: auto;
+            margin: 0;
+        }
+
+        .toggle-btn.active {
+            background: #10b981;
+        }
+
+        .trade-request-item {
+            background: rgba(245, 158, 11, 0.2);
+            border: 2px solid #f59e0b;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { border-color: #f59e0b; }
+            50% { border-color: #fbbf24; }
+        }
+
+        .trade-request-header {
+            font-weight: 600;
+            color: #fbbf24;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .trade-request-details {
+            font-size: 13px;
+            margin-bottom: 10px;
+            color: #d1d5db;
+        }
+
+        .trade-request-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .trade-request-actions button {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .timer-warning {
+            color: #ef4444;
+            font-size: 11px;
+            margin-top: 6px;
+        }
+
         @media (max-width: 1200px) {
             .main-layout {
                 grid-template-columns: 1fr;
@@ -644,6 +710,22 @@
                 </div>
             </div>
 
+            <div class="card">
+                <h2>⚙️ Game Controls</h2>
+                <div class="toggle-section">
+                    <span>Circuit Limit (±8%)</span>
+                    <button class="toggle-btn" id="circuitToggle" onclick="toggleCircuitFreeze()">ACTIVE</button>
+                </div>
+                <div class="toggle-section">
+                    <span>Market Trading</span>
+                    <button class="toggle-btn" id="marketTradingToggle" onclick="toggleMarketTrading()">DISABLED</button>
+                </div>
+                <div class="toggle-section">
+                    <span>Short Selling</span>
+                    <button class="toggle-btn active" id="shortSellingToggle" onclick="toggleShortFreeze()">ENABLED</button>
+                </div>
+            </div>
+
             <div class="grid-2">
                 <div class="card">
                     <h2>Create Team</h2>
@@ -653,16 +735,30 @@
                 </div>
 
                 <div class="card">
-                    <h2>Game Control</h2>
+                    <h2>Allocate Additional Funds</h2>
+                    <select id="fundTeamSelect">
+                        <option value="">Select Team</option>
+                    </select>
+                    <input type="number" id="fundAmount" placeholder="Amount to Allocate">
+                    <button class="btn-success" onclick="allocateFunds()">Allocate Funds</button>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h2>Start Portfolio Allocation</h2>
                     <label style="display: block; margin-bottom: 8px; color: #9ca3af; font-size: 12px;">Phase Duration (seconds)</label>
                     <input type="number" id="phaseDurationInput" value="600">
                     <button class="btn-success" onclick="startPhase('portfolio_allocation')">Start Portfolio Allocation</button>
-                    
-                    <label style="display: block; margin-top: 12px; margin-bottom: 8px; color: #9ca3af; font-size: 12px;">Trading Rounds</label>
+                </div>
+
+                <div class="card">
+                    <h2>Start Trading Phase</h2>
+                    <label style="display: block; margin-bottom: 8px; color: #9ca3af; font-size: 12px;">Number of Rounds</label>
                     <input type="number" id="tradingRoundsInput" value="3">
+                    <label style="display: block; margin-top: 8px; margin-bottom: 8px; color: #9ca3af; font-size: 12px;">Time per Round (seconds)</label>
+                    <input type="number" id="tradingRoundTimeInput" value="600">
                     <button class="btn-purple" onclick="startTradingPhase()">Start Trading Phase</button>
-                    
-                    <button class="btn-danger" onclick="resetPlatform()" style="margin-top: 12px;">Reset Platform</button>
                 </div>
             </div>
 
@@ -684,6 +780,11 @@
             <div class="card">
                 <h2>Stock Price Control</h2>
                 <div class="grid-3" id="adminStockList"></div>
+            </div>
+
+            <div class="card">
+                <h2>🏆 Leaderboard</h2>
+                <div class="scrollable" id="adminLeaderboard"></div>
             </div>
 
             <div class="card">
@@ -709,6 +810,10 @@
             <div class="card">
                 <h2>All Private Messages</h2>
                 <div class="scrollable" id="adminMessagesList"></div>
+            </div>
+
+            <div class="card">
+                <button class="btn-danger" onclick="resetPlatform()">Reset Platform</button>
             </div>
         </div>
 
@@ -760,25 +865,49 @@
                     </div>
 
                     <div id="tradingSection" class="card hidden">
-                        <h2 style="color: #9333ea;">Trading - Full Access</h2>
-                        <select id="tradingStockSelect">
-                            <option value="">Select Stock</option>
-                        </select>
-                        <input type="number" id="tradingQuantity" placeholder="Quantity" min="1">
-                        <div id="tradingInfo" style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 13px;"></div>
+                        <h2 style="color: #9333ea;">Trading Phase</h2>
                         
-                        <div class="trade-buttons">
-                            <button class="btn-success" onclick="executeTrade('buy')">Buy</button>
-                            <button class="btn-danger" onclick="executeTrade('sell')">Sell</button>
-                            <button class="btn-warning" onclick="executeTrade('short_sell')">Short Sell</button>
-                            <button class="btn-info" onclick="executeTrade('cover_short')">Cover Short</button>
+                        <div id="marketTradingSection" class="hidden" style="margin-bottom: 20px;">
+                            <h3 style="color: #10b981; font-size: 16px; margin-bottom: 12px;">🏪 Market Trading (Direct Buy/Sell)</h3>
+                            <select id="marketStockSelect">
+                                <option value="">Select Stock</option>
+                            </select>
+                            <input type="number" id="marketQuantity" placeholder="Quantity" min="1">
+                            <div id="marketInfo" style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 13px;"></div>
+                            <div class="trade-buttons">
+                                <button class="btn-success" onclick="executeMarketTrade('buy')">Buy from Market</button>
+                                <button class="btn-danger" onclick="executeMarketTrade('sell')">Sell to Market</button>
+                                <button class="btn-warning" onclick="executeMarketTrade('short_sell')">Short Sell</button>
+                                <button class="btn-info" onclick="executeMarketTrade('cover_short')">Cover Short</button>
+                            </div>
                         </div>
 
-                        <div style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 12px;">
-                            <div style="color: #fbbf24; font-weight: 600; margin-bottom: 6px;">⚠ Short Selling Rules:</div>
-                            <div style="color: #d1d5db;">• Maximum short: 100% of remaining cash</div>
-                            <div style="color: #d1d5db;">• Short selling increases cash, covering decreases cash</div>
+                        <div id="p2pTradingSection">
+                            <h3 style="color: #a855f7; font-size: 16px; margin-bottom: 12px;">👥 Peer-to-Peer Trading</h3>
+                            <select id="p2pTeamSelect">
+                                <option value="">Select Team</option>
+                            </select>
+                            <select id="p2pStockSelect">
+                                <option value="">Select Stock</option>
+                            </select>
+                            <input type="number" id="p2pQuantity" placeholder="Quantity" min="1">
+                            <input type="number" id="p2pPrice" placeholder="Proposed Price" min="1" step="0.01">
+                            <div id="p2pInfo" style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 13px;"></div>
+                            <div class="trade-buttons">
+                                <button class="btn-success" onclick="sendTradeRequest('buy')">Send Buy Request</button>
+                                <button class="btn-danger" onclick="sendTradeRequest('sell')">Send Sell Request</button>
+                            </div>
                         </div>
+                    </div>
+
+                    <div id="tradeRequestsSection" class="card hidden">
+                        <h2>📨 Incoming Trade Requests</h2>
+                        <div id="tradeRequestsList"></div>
+                    </div>
+
+                    <div id="sentRequestsSection" class="card hidden">
+                        <h2>📤 Sent Trade Requests</h2>
+                        <div id="sentRequestsList"></div>
                     </div>
 
                     <div class="card">
@@ -815,11 +944,6 @@
                     </div>
 
                     <div class="card">
-                        <h2>🏆 Leaderboard</h2>
-                        <div class="scrollable" id="leaderboard"></div>
-                    </div>
-
-                    <div class="card">
                         <h2>📰 News Feed</h2>
                         <div class="scrollable" id="newsFeed"></div>
                     </div>
@@ -845,6 +969,8 @@
         let allStocks = [];
         let allTeams = [];
         let gameConfig = {};
+        let incomingRequests = [];
+        let sentRequests = [];
 
         // Socket event listeners
         socket.on('game_state', (data) => {
@@ -916,6 +1042,15 @@
             updateTimerDisplay();
         });
 
+        socket.on('config_update', (config) => {
+            gameConfig = config;
+            if (currentView === 'admin') {
+                updateAdminToggles();
+            } else if (currentView === 'team') {
+                updateTradingInterface();
+            }
+        });
+
         socket.on('trade_executed', (trade) => {
             if (currentView === 'team' && currentTeam && trade.teamId === currentTeam.id) {
                 socket.emit('team_join', currentTeam.joinCode, (response) => {
@@ -935,14 +1070,69 @@
             if (index !== -1) {
                 allTeams[index] = team;
             }
+            if (currentView === 'team' && currentTeam && team.id === currentTeam.id) {
+                currentTeam = team;
+                updateTeamStats();
+                updateHoldings();
+            }
             if (currentView === 'admin') {
                 updateTeamsTable();
+                updateAdminLeaderboard();
             }
         });
 
-        socket.on('leaderboard_update', (leaderboard) => {
+        socket.on('trade_request_sent', (request) => {
             if (currentView === 'team') {
-                updateLeaderboard();
+                sentRequests.push(request);
+                updateSentRequests();
+                showNotification('Trade request sent', 'success');
+            }
+        });
+
+        socket.on('trade_request_received', (request) => {
+            if (currentView === 'team') {
+                incomingRequests.push(request);
+                updateIncomingRequests();
+                showNotification('New trade request received!', 'info');
+            }
+        });
+
+        socket.on('trade_request_expired', (requestId) => {
+            if (currentView === 'team') {
+                incomingRequests = incomingRequests.filter(r => r.id !== requestId);
+                sentRequests = sentRequests.filter(r => r.id !== requestId);
+                updateIncomingRequests();
+                updateSentRequests();
+            }
+        });
+
+        socket.on('trade_request_cancelled', (requestId) => {
+            if (currentView === 'team') {
+                incomingRequests = incomingRequests.filter(r => r.id !== requestId);
+                sentRequests = sentRequests.filter(r => r.id !== requestId);
+                updateIncomingRequests();
+                updateSentRequests();
+                showNotification('Trade request cancelled', 'info');
+            }
+        });
+
+        socket.on('trade_request_completed', (requestId) => {
+            if (currentView === 'team') {
+                incomingRequests = incomingRequests.filter(r => r.id !== requestId);
+                sentRequests = sentRequests.filter(r => r.id !== requestId);
+                updateIncomingRequests();
+                updateSentRequests();
+                showNotification('Trade completed successfully!', 'success');
+            }
+        });
+
+        socket.on('trade_request_failed', (data) => {
+            if (currentView === 'team') {
+                incomingRequests = incomingRequests.filter(r => r.id !== data.requestId);
+                sentRequests = sentRequests.filter(r => r.id !== data.requestId);
+                updateIncomingRequests();
+                updateSentRequests();
+                showNotification(`Trade failed: ${data.error}`, 'error');
             }
         });
 
@@ -1002,368 +1192,75 @@
                     updateAdminView();
                     showNotification('Admin access granted', 'success');
                 } else {
-                    showNotification('Invalid admin password', 'error');
+                    marketTradingSection.classList.add('hidden');
+                    p2pTradingSection.classList.remove('hidden');
+                    tradeRequestsSection.classList.remove('hidden');
+                    sentRequestsSection.classList.remove('hidden');
                 }
-            });
+            } else {
+                portfolioSection.classList.add('hidden');
+                tradingSection.classList.add('hidden');
+                tradeRequestsSection.classList.add('hidden');
+                sentRequestsSection.classList.add('hidden');
+            }
         }
 
-        function joinTeam() {
-            const joinCode = document.getElementById('joinCodeInput').value.toUpperCase();
-            socket.emit('team_join', joinCode, (response) => {
-                if (response.success) {
-                    currentTeam = response.team;
-                    currentView = 'team';
-                    document.getElementById('loginView').classList.add('hidden');
-                    document.getElementById('teamView').classList.remove('hidden');
-                    updateTeamView();
-                    showNotification(`Joined team: ${currentTeam.name}`, 'success');
-                } else {
-                    showNotification('Invalid join code', 'error');
-                }
-            });
-        }
-
-        // Admin functions
-        function createTeam() {
-            const name = document.getElementById('teamNameInput').value;
-            const balance = parseFloat(document.getElementById('startingBalanceInput').value);
+        function updateIncomingRequests() {
+            const container = document.getElementById('tradeRequestsList');
             
-            if (!name || !balance) {
-                showNotification('Please enter team name and balance', 'error');
+            if (incomingRequests.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 13px;">No incoming requests</div>';
                 return;
             }
 
-            socket.emit('create_team', { name, startingBalance: balance }, (response) => {
-                if (response.success) {
-                    document.getElementById('teamNameInput').value = '';
-                    document.getElementById('startingBalanceInput').value = '100000';
-                }
-            });
-        }
-
-        function startPhase(phase) {
-            const duration = parseInt(document.getElementById('phaseDurationInput').value);
-            socket.emit('start_phase', { phase, duration, rounds: 0 });
-        }
-
-        function startTradingPhase() {
-            const duration = parseInt(document.getElementById('phaseDurationInput').value);
-            const rounds = parseInt(document.getElementById('tradingRoundsInput').value);
-            socket.emit('start_phase', { phase: 'trading', duration, rounds });
-        }
-
-        function updateStockPrice(symbol, adjustment) {
-            const stock = allStocks.find(s => s.symbol === symbol);
-            if (stock) {
-                const newPrice = Math.max(1, stock.price + adjustment);
-                socket.emit('update_stock_price', { symbol, price: newPrice });
-            }
-        }
-
-        function setStockPrice(symbol) {
-            const input = document.getElementById(`price_${symbol}`);
-            const newPrice = parseFloat(input.value);
-            if (newPrice && newPrice > 0) {
-                socket.emit('update_stock_price', { symbol, price: newPrice });
-                input.value = '';
-            }
-        }
-
-        function broadcastNews() {
-            const title = document.getElementById('newsTitleInput').value;
-            const content = document.getElementById('newsContentInput').value;
-            
-            if (!title || !content) {
-                showNotification('Please enter news title and content', 'error');
-                return;
-            }
-
-            socket.emit('broadcast_news', { title, content });
-            document.getElementById('newsTitleInput').value = '';
-            document.getElementById('newsContentInput').value = '';
-        }
-
-        function postMarketTip() {
-            const content = document.getElementById('marketTipInput').value;
-            
-            if (!content) {
-                showNotification('Please enter tip content', 'error');
-                return;
-            }
-
-            socket.emit('post_market_tip', { content });
-            document.getElementById('marketTipInput').value = '';
-        }
-
-        function resetPlatform() {
-            if (confirm('Are you sure you want to reset the entire platform? This cannot be undone.')) {
-                socket.emit('reset_platform');
-            }
-        }
-
-        function downloadGeneralTradebook() {
-            socket.emit('download_tradebook', null, (response) => {
-                if (response.success) {
-                    downloadCSV(response.csv, 'general_tradebook.csv');
-                }
-            });
-        }
-
-        function downloadTeamTradebook(teamId, teamName) {
-            socket.emit('download_tradebook', teamId, (response) => {
-                if (response.success) {
-                    downloadCSV(response.csv, `${teamName}_tradebook.csv`);
-                }
-            });
-        }
-
-        function downloadCSV(csv, filename) {
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            window.URL.revokeObjectURL(url);
-        }
-
-        function updateAdminView() {
-            updateAdminStocks();
-            updateTeamsTable();
-            updatePhaseDisplay();
-            updateTimerDisplay();
-        }
-
-        function updateAdminStocks() {
-            const container = document.getElementById('adminStockList');
-            container.innerHTML = allStocks.map(stock => `
-                <div class="stock-item">
-                    <div class="stock-name">${stock.name}</div>
-                    <div class="stock-price">₹${stock.price.toLocaleString()}</div>
-                    <div class="stock-controls">
-                        <button class="btn-danger" onclick="updateStockPrice('${stock.symbol}', -50)">-₹50</button>
-                        <button class="btn-success" onclick="updateStockPrice('${stock.symbol}', 50)">+₹50</button>
-                    </div>
-                    <div class="price-input-group">
-                        <input type="number" id="price_${stock.symbol}" placeholder="New price">
-                        <button class="btn-info" onclick="setStockPrice('${stock.symbol}')">Set</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function updateTeamsTable() {
-            const tbody = document.querySelector('#teamsTable tbody');
-            tbody.innerHTML = allTeams.map(team => {
-                const portfolioValue = calculatePortfolioValue(team);
-                const pl = portfolioValue - team.startingBalance;
-                const plColor = pl >= 0 ? '#10b981' : '#ef4444';
-                
+            container.innerHTML = incomingRequests.map(request => {
+                const timeLeft = Math.max(0, Math.floor((request.expiresAt - Date.now()) / 1000));
                 return `
-                    <tr>
-                        <td>${team.name}</td>
-                        <td style="font-family: monospace; color: #22d3ee;">${team.joinCode}</td>
-                        <td style="color: #10b981;">₹${team.cash.toLocaleString()}</td>
-                        <td style="color: #a855f7;">₹${portfolioValue.toLocaleString()}</td>
-                        <td style="color: ${plColor};">₹${pl.toLocaleString()}</td>
-                        <td><button class="btn-info" style="padding: 6px 12px; font-size: 11px;" onclick="downloadTeamTradebook('${team.id}', '${team.name}')">📥 Download</button></td>
-                    </tr>
+                    <div class="trade-request-item">
+                        <div class="trade-request-header">
+                            ${request.fromTeamName} wants to ${request.action}
+                        </div>
+                        <div class="trade-request-details">
+                            <strong>${request.stockName}</strong><br>
+                            Quantity: ${request.quantity}<br>
+                            Price: ₹${request.price.toLocaleString()}<br>
+                            Total: ₹${(request.quantity * request.price).toLocaleString()}
+                        </div>
+                        <div class="timer-warning">⏱ Expires in ${timeLeft}s</div>
+                        <div class="trade-request-actions">
+                            <button class="btn-success" onclick="respondToRequest('${request.id}', true)">Accept</button>
+                            <button class="btn-danger" onclick="respondToRequest('${request.id}', false)">Reject</button>
+                        </div>
+                    </div>
                 `;
             }).join('');
         }
 
-        function updateAdminMessages() {
-            const container = document.getElementById('adminMessagesList');
-            socket.emit('get_team_messages', 'admin');
+        function updateSentRequests() {
+            const container = document.getElementById('sentRequestsList');
             
-            socket.on('all_messages', (messages) => {
-                if (messages && messages.length > 0) {
-                    container.innerHTML = messages.map(msg => `
-                        <div class="message-item">
-                            <div class="message-header">
-                                <span style="font-weight: 600; color: #22d3ee;">${msg.fromTeamName} → ${msg.toTeamName}</span>
-                                <span style="color: #9ca3af;">${msg.timestamp}</span>
-                            </div>
-                            <div style="font-size: 13px;">${msg.message}</div>
+            if (sentRequests.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 13px;">No sent requests</div>';
+                return;
+            }
+
+            container.innerHTML = sentRequests.map(request => {
+                const timeLeft = Math.max(0, Math.floor((request.expiresAt - Date.now()) / 1000));
+                return `
+                    <div class="trade-request-item">
+                        <div class="trade-request-header">
+                            Waiting for ${request.toTeamName} to ${request.action === 'buy' ? 'sell' : 'buy'}
                         </div>
-                    `).join('');
-                } else {
-                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No messages yet</div>';
-                }
-            });
-        }
-
-        // Team functions
-        function executeBuy() {
-            const symbol = document.getElementById('portfolioStockSelect').value;
-            const quantity = parseInt(document.getElementById('portfolioQuantity').value);
-            
-            if (!symbol || !quantity) {
-                showNotification('Please select stock and quantity', 'error');
-                return;
-            }
-
-            const stock = allStocks.find(s => s.symbol === symbol);
-            executeTrade('buy', symbol, quantity, stock.price);
-        }
-
-        function executeTrade(action, symbolOverride, quantityOverride, priceOverride) {
-            let symbol, quantity;
-            
-            if (symbolOverride) {
-                symbol = symbolOverride;
-                quantity = quantityOverride;
-            } else {
-                symbol = document.getElementById('tradingStockSelect').value;
-                quantity = parseInt(document.getElementById('tradingQuantity').value);
-            }
-            
-            if (!symbol || !quantity) {
-                showNotification('Please select stock and quantity', 'error');
-                return;
-            }
-
-            const stock = allStocks.find(s => s.symbol === symbol);
-            const price = priceOverride || stock.price;
-
-            socket.emit('execute_trade', {
-                teamId: currentTeam.id,
-                action,
-                symbol,
-                quantity,
-                price
-            }, (response) => {
-                if (response.success) {
-                    currentTeam = response.team;
-                    updateTeamView();
-                    if (action === 'buy') {
-                        document.getElementById('portfolioQuantity').value = '';
-                    } else {
-                        document.getElementById('tradingQuantity').value = '';
-                    }
-                } else {
-                    showNotification(response.error, 'error');
-                }
-            });
-        }
-
-        function sendMessage() {
-            const toTeamId = document.getElementById('messageTargetSelect').value;
-            const message = document.getElementById('messageText').value;
-            
-            if (!toTeamId || !message) {
-                showNotification('Please select team and enter message', 'error');
-                return;
-            }
-
-            socket.emit('send_message', {
-                fromTeamId: currentTeam.id,
-                toTeamId,
-                message
-            });
-
-            document.getElementById('messageText').value = '';
-        }
-
-        function toggleMarketTips() {
-            const content = document.getElementById('marketTipsContent');
-            const icon = document.getElementById('tipsToggleIcon');
-            content.classList.toggle('hidden');
-            icon.textContent = content.classList.contains('hidden') ? '▼' : '▲';
-        }
-
-        function updateTeamView() {
-            document.getElementById('teamName').textContent = currentTeam.name;
-            document.getElementById('teamCode').textContent = currentTeam.joinCode;
-            updateTeamStats();
-            updateHoldings();
-            updateTradingInterface();
-            updateLiveStockPrices();
-            populateStockSelects();
-            populateTeamSelect();
-            updateLeaderboard();
-            updateNewsFeed();
-            updateMarketTips();
-            updateMessages();
-        }
-
-        function updateTeamStats() {
-            const portfolioValue = calculatePortfolioValue(currentTeam);
-            const pl = portfolioValue - currentTeam.startingBalance;
-            
-            document.getElementById('teamCash').textContent = `₹${currentTeam.cash.toLocaleString()}`;
-            document.getElementById('teamPortfolio').textContent = `₹${portfolioValue.toLocaleString()}`;
-            
-            const plElement = document.getElementById('teamPL');
-            plElement.textContent = `₹${pl.toLocaleString()}`;
-            plElement.style.color = pl >= 0 ? '#10b981' : '#ef4444';
-        }
-
-        function updateHoldings() {
-            const holdingsList = document.getElementById('holdingsList');
-            const holdings = Object.entries(currentTeam.holdings || {});
-            
-            if (holdings.length === 0) {
-                holdingsList.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 13px;">No holdings yet</div>';
-            } else {
-                holdingsList.innerHTML = holdings.map(([symbol, qty]) => {
-                    const stock = allStocks.find(s => s.symbol === symbol);
-                    const value = stock ? qty * stock.price : 0;
-                    return `
-                        <div class="holdings-item">
-                            <div>
-                                <div style="font-weight: 600; color: #22d3ee; font-size: 13px;">${stock ? stock.name : symbol}</div>
-                                <div style="font-size: 12px; color: #9ca3af;">Qty: ${qty} @ ₹${stock ? stock.price.toLocaleString() : 0}</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-weight: bold; color: #10b981; font-size: 14px;">₹${value.toLocaleString()}</div>
-                            </div>
+                        <div class="trade-request-details">
+                            <strong>${request.stockName}</strong><br>
+                            Quantity: ${request.quantity}<br>
+                            Price: ₹${request.price.toLocaleString()}<br>
+                            Total: ₹${(request.quantity * request.price).toLocaleString()}
                         </div>
-                    `;
-                }).join('');
-            }
-
-            const shortHoldingsList = document.getElementById('shortHoldingsList');
-            const shortHoldings = Object.entries(currentTeam.shortHoldings || {});
-            
-            if (shortHoldings.length > 0) {
-                shortHoldingsList.innerHTML = `
-                    <h3 style="margin: 20px 0 12px 0; color: #f59e0b; font-size: 16px;">Short Positions</h3>
-                    ${shortHoldings.map(([symbol, qty]) => {
-                        const stock = allStocks.find(s => s.symbol === symbol);
-                        const value = stock ? qty * stock.price : 0;
-                        return `
-                            <div class="holdings-item short-position">
-                                <div>
-                                    <div style="font-weight: 600; color: #fb923c; font-size: 13px;">${stock ? stock.name : symbol}</div>
-                                    <div style="font-size: 12px; color: #9ca3af;">Short Qty: ${qty} @ ₹${stock ? stock.price.toLocaleString() : 0}</div>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div style="font-weight: bold; color: #ef4444; font-size: 14px;">-₹${value.toLocaleString()}</div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
+                        <div class="timer-warning">⏱ Expires in ${timeLeft}s</div>
+                    </div>
                 `;
-            } else {
-                shortHoldingsList.innerHTML = '';
-            }
-        }
-
-        function updateTradingInterface() {
-            const portfolioSection = document.getElementById('portfolioAllocationSection');
-            const tradingSection = document.getElementById('tradingSection');
-            
-            if (gameConfig.phase === 'portfolio_allocation') {
-                portfolioSection.classList.remove('hidden');
-                tradingSection.classList.add('hidden');
-            } else if (gameConfig.phase === 'trading') {
-                portfolioSection.classList.add('hidden');
-                tradingSection.classList.remove('hidden');
-            } else {
-                portfolioSection.classList.add('hidden');
-                tradingSection.classList.add('hidden');
-            }
+            }).join('');
         }
 
         function updateLiveStockPrices() {
@@ -1374,32 +1271,6 @@
                     <div class="stock-compact-price">₹${stock.price.toLocaleString()}</div>
                 </div>
             `).join('');
-        }
-
-        function updateLeaderboard() {
-            const container = document.getElementById('leaderboard');
-            const sortedTeams = [...allTeams].sort((a, b) => 
-                calculatePortfolioValue(b) - calculatePortfolioValue(a)
-            );
-
-            container.innerHTML = sortedTeams.map((team, index) => {
-                const value = calculatePortfolioValue(team);
-                const isCurrentTeam = currentTeam && team.id === currentTeam.id;
-                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
-                
-                return `
-                    <div class="leaderboard-item ${isCurrentTeam ? 'current-team' : ''}">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div class="rank ${rankClass}">#{index + 1}</div>
-                            <div>
-                                <div style="font-weight: 600; font-size: 13px;">${team.name}</div>
-                                <div style="font-size: 12px; color: #9ca3af;">₹${value.toLocaleString()}</div>
-                            </div>
-                        </div>
-                        ${isCurrentTeam ? '<div style="color: #a855f7; font-weight: bold; font-size: 12px;">YOU</div>' : ''}
-                    </div>
-                `;
-            }).join('');
         }
 
         function updateNewsFeed() {
@@ -1463,28 +1334,39 @@
 
         function populateStockSelects() {
             const portfolioSelect = document.getElementById('portfolioStockSelect');
-            const tradingSelect = document.getElementById('tradingStockSelect');
+            const marketSelect = document.getElementById('marketStockSelect');
+            const p2pSelect = document.getElementById('p2pStockSelect');
             
             const options = allStocks.map(stock => 
                 `<option value="${stock.symbol}">${stock.name} - ₹${stock.price.toLocaleString()}</option>`
             ).join('');
             
             portfolioSelect.innerHTML = '<option value="">Select Stock</option>' + options;
-            tradingSelect.innerHTML = '<option value="">Select Stock</option>' + options;
+            marketSelect.innerHTML = '<option value="">Select Stock</option>' + options;
+            p2pSelect.innerHTML = '<option value="">Select Stock</option>' + options;
 
             portfolioSelect.addEventListener('change', updatePortfolioCost);
-            tradingSelect.addEventListener('change', updateTradingInfo);
             document.getElementById('portfolioQuantity').addEventListener('input', updatePortfolioCost);
-            document.getElementById('tradingQuantity').addEventListener('input', updateTradingInfo);
+            
+            marketSelect.addEventListener('change', updateMarketInfo);
+            document.getElementById('marketQuantity').addEventListener('input', updateMarketInfo);
+            
+            p2pSelect.addEventListener('change', updateP2PInfo);
+            document.getElementById('p2pQuantity').addEventListener('input', updateP2PInfo);
+            document.getElementById('p2pPrice').addEventListener('input', updateP2PInfo);
         }
 
         function populateTeamSelect() {
-            const select = document.getElementById('messageTargetSelect');
+            const messageSelect = document.getElementById('messageTargetSelect');
+            const p2pSelect = document.getElementById('p2pTeamSelect');
+            
             const options = allTeams
                 .filter(team => team.id !== currentTeam.id)
                 .map(team => `<option value="${team.id}">${team.name}</option>`)
                 .join('');
-            select.innerHTML = '<option value="">Select Team</option>' + options;
+                
+            messageSelect.innerHTML = '<option value="">Select Team</option>' + options;
+            p2pSelect.innerHTML = '<option value="">Select Team</option>' + options;
         }
 
         function updatePortfolioCost() {
@@ -1504,10 +1386,10 @@
             }
         }
 
-        function updateTradingInfo() {
-            const symbol = document.getElementById('tradingStockSelect').value;
-            const quantity = parseInt(document.getElementById('tradingQuantity').value) || 0;
-            const container = document.getElementById('tradingInfo');
+        function updateMarketInfo() {
+            const symbol = document.getElementById('marketStockSelect').value;
+            const quantity = parseInt(document.getElementById('marketQuantity').value) || 0;
+            const container = document.getElementById('marketInfo');
             
             if (symbol && quantity) {
                 const stock = allStocks.find(s => s.symbol === symbol);
@@ -1516,7 +1398,7 @@
                 const shorts = currentTeam.shortHoldings[symbol] || 0;
                 
                 container.innerHTML = `
-                    <div style="color: #9ca3af; font-size: 12px; margin-bottom: 4px;">Total Value</div>
+                    <div style="color: #9ca3af; font-size: 12px; margin-bottom: 4px;">Total Value @ Market Price</div>
                     <div style="font-size: 18px; font-weight: bold; color: #22d3ee; margin-bottom: 6px;">₹${value.toLocaleString()}</div>
                     <div style="font-size: 11px; color: #9ca3af;">
                         Holdings: ${holdings} | Short: ${shorts}
@@ -1525,6 +1407,46 @@
             } else {
                 container.innerHTML = '';
             }
+        }
+
+        function updateP2PInfo() {
+            const symbol = document.getElementById('p2pStockSelect').value;
+            const quantity = parseInt(document.getElementById('p2pQuantity').value) || 0;
+            const price = parseFloat(document.getElementById('p2pPrice').value) || 0;
+            const container = document.getElementById('p2pInfo');
+            
+            if (symbol && quantity && price) {
+                const stock = allStocks.find(s => s.symbol === symbol);
+                const value = quantity * price;
+                const holdings = currentTeam.holdings[symbol] || 0;
+                
+                let circuitInfo = '';
+                if (!gameConfig.circuitLimitFrozen) {
+                    const lowerLimit = stock.price * 0.92;
+                    const upperLimit = stock.price * 1.08;
+                    const isValid = price >= lowerLimit && price <= upperLimit;
+                    circuitInfo = `<div style="font-size: 11px; color: ${isValid ? '#10b981' : '#ef4444'}; margin-top: 4px;">
+                        Circuit: ₹${lowerLimit.toFixed(2)} - ₹${upperLimit.toFixed(2)} ${isValid ? '✓' : '✗ Price outside circuit!'}
+                    </div>`;
+                } else {
+                    circuitInfo = '<div style="font-size: 11px; color: #f59e0b; margin-top: 4px;">⚠️ Circuit limit frozen</div>';
+                }
+                
+                container.innerHTML = `
+                    <div style="color: #9ca3af; font-size: 12px; margin-bottom: 4px;">Total Value</div>
+                    <div style="font-size: 18px; font-weight: bold; color: #22d3ee; margin-bottom: 6px;">₹${value.toLocaleString()}</div>
+                    <div style="font-size: 11px; color: #9ca3af;">
+                        Market Price: ₹${stock.price.toLocaleString()} | Your Holdings: ${holdings}
+                    </div>
+                    ${circuitInfo}
+                `;
+            } else {
+                container.innerHTML = '';
+            }
+        }
+
+        function updateTradingInfo() {
+            // Legacy function kept for compatibility
         }
 
         function calculatePortfolioValue(team) {
@@ -1615,6 +1537,555 @@
                 container.insertBefore(messageDiv, container.firstChild);
             }
         });
+
+        // Update request timers every second
+        setInterval(() => {
+            if (currentView === 'team' && gameConfig.phase === 'trading') {
+                updateIncomingRequests();
+                updateSentRequests();
+            }
+        }, 1000);
     </script>
 </body>
 </html>
+                    showNotification('Invalid admin password', 'error');
+                }
+            });
+        }
+
+        function joinTeam() {
+            const joinCode = document.getElementById('joinCodeInput').value.toUpperCase();
+            socket.emit('team_join', joinCode, (response) => {
+                if (response.success) {
+                    currentTeam = response.team;
+                    currentView = 'team';
+                    document.getElementById('loginView').classList.add('hidden');
+                    document.getElementById('teamView').classList.remove('hidden');
+                    updateTeamView();
+                    showNotification(`Joined team: ${currentTeam.name}`, 'success');
+                } else {
+                    showNotification('Invalid join code', 'error');
+                }
+            });
+        }
+
+        // Admin functions
+        function createTeam() {
+            const name = document.getElementById('teamNameInput').value;
+            const balance = parseFloat(document.getElementById('startingBalanceInput').value);
+            
+            if (!name || !balance) {
+                showNotification('Please enter team name and balance', 'error');
+                return;
+            }
+
+            socket.emit('create_team', { name, startingBalance: balance }, (response) => {
+                if (response.success) {
+                    document.getElementById('teamNameInput').value = '';
+                    document.getElementById('startingBalanceInput').value = '100000';
+                }
+            });
+        }
+
+        function allocateFunds() {
+            const teamId = document.getElementById('fundTeamSelect').value;
+            const amount = parseFloat(document.getElementById('fundAmount').value);
+            
+            if (!teamId || !amount) {
+                showNotification('Please select team and enter amount', 'error');
+                return;
+            }
+
+            socket.emit('allocate_funds', { teamId, amount }, (response) => {
+                if (response.success) {
+                    document.getElementById('fundAmount').value = '';
+                    showNotification('Funds allocated successfully', 'success');
+                } else {
+                    showNotification(response.error, 'error');
+                }
+            });
+        }
+
+        function toggleCircuitFreeze() {
+            socket.emit('toggle_circuit_freeze', (response) => {
+                if (response.success) {
+                    showNotification(response.frozen ? 'Circuit limit frozen' : 'Circuit limit active', 'success');
+                }
+            });
+        }
+
+        function toggleMarketTrading() {
+            socket.emit('toggle_market_trading', (response) => {
+                if (response.success) {
+                    showNotification(response.enabled ? 'Market trading enabled' : 'Market trading disabled', 'success');
+                }
+            });
+        }
+
+        function toggleShortFreeze() {
+            socket.emit('toggle_short_freeze', (response) => {
+                if (response.success) {
+                    showNotification(response.frozen ? 'Short selling frozen' : 'Short selling enabled', 'success');
+                }
+            });
+        }
+
+        function startPhase(phase) {
+            const duration = parseInt(document.getElementById('phaseDurationInput').value);
+            socket.emit('start_phase', { phase, duration, rounds: 0 });
+        }
+
+        function startTradingPhase() {
+            const rounds = parseInt(document.getElementById('tradingRoundsInput').value);
+            const tradingRoundTime = parseInt(document.getElementById('tradingRoundTimeInput').value);
+            socket.emit('start_phase', { phase: 'trading', duration: tradingRoundTime, rounds, tradingRoundTime });
+        }
+
+        function updateStockPrice(symbol, adjustment) {
+            const stock = allStocks.find(s => s.symbol === symbol);
+            if (stock) {
+                const newPrice = Math.max(1, stock.price + adjustment);
+                socket.emit('update_stock_price', { symbol, price: newPrice });
+            }
+        }
+
+        function setStockPrice(symbol) {
+            const input = document.getElementById(`price_${symbol}`);
+            const newPrice = parseFloat(input.value);
+            if (newPrice && newPrice > 0) {
+                socket.emit('update_stock_price', { symbol, price: newPrice });
+                input.value = '';
+            }
+        }
+
+        function broadcastNews() {
+            const title = document.getElementById('newsTitleInput').value;
+            const content = document.getElementById('newsContentInput').value;
+            
+            if (!title || !content) {
+                showNotification('Please enter news title and content', 'error');
+                return;
+            }
+
+            socket.emit('broadcast_news', { title, content });
+            document.getElementById('newsTitleInput').value = '';
+            document.getElementById('newsContentInput').value = '';
+        }
+
+        function postMarketTip() {
+            const content = document.getElementById('marketTipInput').value;
+            
+            if (!content) {
+                showNotification('Please enter tip content', 'error');
+                return;
+            }
+
+            socket.emit('post_market_tip', { content });
+            document.getElementById('marketTipInput').value = '';
+        }
+
+        function resetPlatform() {
+            if (confirm('Are you sure you want to reset the entire platform? This cannot be undone.')) {
+                socket.emit('reset_platform');
+            }
+        }
+
+        function downloadGeneralTradebook() {
+            socket.emit('download_tradebook', null, (response) => {
+                if (response.success) {
+                    downloadCSV(response.csv, 'general_tradebook.csv');
+                }
+            });
+        }
+
+        function downloadTeamTradebook(teamId, teamName) {
+            socket.emit('download_tradebook', teamId, (response) => {
+                if (response.success) {
+                    downloadCSV(response.csv, `${teamName}_tradebook.csv`);
+                }
+            });
+        }
+
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function updateAdminView() {
+            updateAdminStocks();
+            updateTeamsTable();
+            updatePhaseDisplay();
+            updateTimerDisplay();
+            updateAdminToggles();
+            updateAdminLeaderboard();
+            populateFundTeamSelect();
+        }
+
+        function updateAdminToggles() {
+            const circuitBtn = document.getElementById('circuitToggle');
+            const marketBtn = document.getElementById('marketTradingToggle');
+            const shortBtn = document.getElementById('shortSellingToggle');
+
+            if (gameConfig.circuitLimitFrozen) {
+                circuitBtn.textContent = 'FROZEN';
+                circuitBtn.classList.add('active');
+            } else {
+                circuitBtn.textContent = 'ACTIVE';
+                circuitBtn.classList.remove('active');
+            }
+
+            if (gameConfig.marketTradingEnabled) {
+                marketBtn.textContent = 'ENABLED';
+                marketBtn.classList.add('active');
+            } else {
+                marketBtn.textContent = 'DISABLED';
+                marketBtn.classList.remove('active');
+            }
+
+            if (gameConfig.shortSellingFrozen) {
+                shortBtn.textContent = 'FROZEN';
+                shortBtn.classList.remove('active');
+            } else {
+                shortBtn.textContent = 'ENABLED';
+                shortBtn.classList.add('active');
+            }
+        }
+
+        function populateFundTeamSelect() {
+            const select = document.getElementById('fundTeamSelect');
+            const options = allTeams.map(team => 
+                `<option value="${team.id}">${team.name}</option>`
+            ).join('');
+            select.innerHTML = '<option value="">Select Team</option>' + options;
+        }
+
+        function updateAdminStocks() {
+            const container = document.getElementById('adminStockList');
+            container.innerHTML = allStocks.map(stock => `
+                <div class="stock-item">
+                    <div class="stock-name">${stock.name}</div>
+                    <div class="stock-price">₹${stock.price.toLocaleString()}</div>
+                    <div class="stock-controls">
+                        <button class="btn-danger" onclick="updateStockPrice('${stock.symbol}', -50)">-₹50</button>
+                        <button class="btn-success" onclick="updateStockPrice('${stock.symbol}', 50)">+₹50</button>
+                    </div>
+                    <div class="price-input-group">
+                        <input type="number" id="price_${stock.symbol}" placeholder="New price">
+                        <button class="btn-info" onclick="setStockPrice('${stock.symbol}')">Set</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateTeamsTable() {
+            const tbody = document.querySelector('#teamsTable tbody');
+            tbody.innerHTML = allTeams.map(team => {
+                const portfolioValue = calculatePortfolioValue(team);
+                const pl = portfolioValue - team.startingBalance;
+                const plColor = pl >= 0 ? '#10b981' : '#ef4444';
+                
+                return `
+                    <tr>
+                        <td>${team.name}</td>
+                        <td style="font-family: monospace; color: #22d3ee;">${team.joinCode}</td>
+                        <td style="color: #10b981;">₹${team.cash.toLocaleString()}</td>
+                        <td style="color: #a855f7;">₹${portfolioValue.toLocaleString()}</td>
+                        <td style="color: ${plColor};">₹${pl.toLocaleString()}</td>
+                        <td><button class="btn-info" style="padding: 6px 12px; font-size: 11px;" onclick="downloadTeamTradebook('${team.id}', '${team.name}')">📥 Download</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateAdminLeaderboard() {
+            const container = document.getElementById('adminLeaderboard');
+            const sortedTeams = [...allTeams].sort((a, b) => 
+                calculatePortfolioValue(b) - calculatePortfolioValue(a)
+            );
+
+            container.innerHTML = sortedTeams.map((team, index) => {
+                const value = calculatePortfolioValue(team);
+                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+                
+                return `
+                    <div class="leaderboard-item">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="rank ${rankClass}">#{index + 1}</div>
+                            <div>
+                                <div style="font-weight: 600; font-size: 13px;">${team.name}</div>
+                                <div style="font-size: 12px; color: #9ca3af;">₹${value.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateAdminMessages() {
+            const container = document.getElementById('adminMessagesList');
+            socket.emit('get_team_messages', 'admin');
+            
+            socket.on('all_messages', (messages) => {
+                if (messages && messages.length > 0) {
+                    container.innerHTML = messages.map(msg => `
+                        <div class="message-item">
+                            <div class="message-header">
+                                <span style="font-weight: 600; color: #22d3ee;">${msg.fromTeamName} → ${msg.toTeamName}</span>
+                                <span style="color: #9ca3af;">${msg.timestamp}</span>
+                            </div>
+                            <div style="font-size: 13px;">${msg.message}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No messages yet</div>';
+                }
+            });
+        }
+
+        // Team functions
+        function executeBuy() {
+            const symbol = document.getElementById('portfolioStockSelect').value;
+            const quantity = parseInt(document.getElementById('portfolioQuantity').value);
+            
+            if (!symbol || !quantity) {
+                showNotification('Please select stock and quantity', 'error');
+                return;
+            }
+
+            const stock = allStocks.find(s => s.symbol === symbol);
+            executeTrade('buy', symbol, quantity, stock.price);
+        }
+
+        function executeTrade(action, symbolOverride, quantityOverride, priceOverride) {
+            let symbol, quantity;
+            
+            if (symbolOverride) {
+                symbol = symbolOverride;
+                quantity = quantityOverride;
+            } else {
+                symbol = document.getElementById('tradingStockSelect').value;
+                quantity = parseInt(document.getElementById('tradingQuantity').value);
+            }
+            
+            if (!symbol || !quantity) {
+                showNotification('Please select stock and quantity', 'error');
+                return;
+            }
+
+            const stock = allStocks.find(s => s.symbol === symbol);
+            const price = priceOverride || stock.price;
+
+            socket.emit('execute_trade', {
+                teamId: currentTeam.id,
+                action,
+                symbol,
+                quantity,
+                price
+            }, (response) => {
+                if (response.success) {
+                    currentTeam = response.team;
+                    updateTeamView();
+                    if (action === 'buy') {
+                        document.getElementById('portfolioQuantity').value = '';
+                    }
+                } else {
+                    showNotification(response.error, 'error');
+                }
+            });
+        }
+
+        function executeMarketTrade(action) {
+            const symbol = document.getElementById('marketStockSelect').value;
+            const quantity = parseInt(document.getElementById('marketQuantity').value);
+            
+            if (!symbol || !quantity) {
+                showNotification('Please select stock and quantity', 'error');
+                return;
+            }
+
+            const stock = allStocks.find(s => s.symbol === symbol);
+            
+            socket.emit('execute_trade', {
+                teamId: currentTeam.id,
+                action,
+                symbol,
+                quantity,
+                price: stock.price
+            }, (response) => {
+                if (response.success) {
+                    currentTeam = response.team;
+                    updateTeamView();
+                    document.getElementById('marketQuantity').value = '';
+                    showNotification('Market trade executed', 'success');
+                } else {
+                    showNotification(response.error, 'error');
+                }
+            });
+        }
+
+        function sendTradeRequest(action) {
+            const toTeamId = document.getElementById('p2pTeamSelect').value;
+            const symbol = document.getElementById('p2pStockSelect').value;
+            const quantity = parseInt(document.getElementById('p2pQuantity').value);
+            const price = parseFloat(document.getElementById('p2pPrice').value);
+            
+            if (!toTeamId || !symbol || !quantity || !price) {
+                showNotification('Please fill all fields', 'error');
+                return;
+            }
+
+            socket.emit('send_trade_request', {
+                fromTeamId: currentTeam.id,
+                toTeamId,
+                action,
+                symbol,
+                quantity,
+                price
+            }, (response) => {
+                if (response.success) {
+                    document.getElementById('p2pQuantity').value = '';
+                    document.getElementById('p2pPrice').value = '';
+                } else {
+                    showNotification(response.error, 'error');
+                }
+            });
+        }
+
+        function respondToRequest(requestId, accept) {
+            socket.emit('respond_trade_request', { requestId, accept }, (response) => {
+                if (!response.success && response.error) {
+                    showNotification(response.error, 'error');
+                }
+            });
+        }
+
+        function sendMessage() {
+            const toTeamId = document.getElementById('messageTargetSelect').value;
+            const message = document.getElementById('messageText').value;
+            
+            if (!toTeamId || !message) {
+                showNotification('Please select team and enter message', 'error');
+                return;
+            }
+
+            socket.emit('send_message', {
+                fromTeamId: currentTeam.id,
+                toTeamId,
+                message
+            });
+
+            document.getElementById('messageText').value = '';
+        }
+
+        function toggleMarketTips() {
+            const content = document.getElementById('marketTipsContent');
+            const icon = document.getElementById('tipsToggleIcon');
+            content.classList.toggle('hidden');
+            icon.textContent = content.classList.contains('hidden') ? '▼' : '▲';
+        }
+
+        function updateTeamView() {
+            document.getElementById('teamName').textContent = currentTeam.name;
+            document.getElementById('teamCode').textContent = currentTeam.joinCode;
+            updateTeamStats();
+            updateHoldings();
+            updateTradingInterface();
+            updateLiveStockPrices();
+            populateStockSelects();
+            populateTeamSelect();
+            updateNewsFeed();
+            updateMarketTips();
+            updateMessages();
+        }
+
+        function updateTeamStats() {
+            const portfolioValue = calculatePortfolioValue(currentTeam);
+            const pl = portfolioValue - currentTeam.startingBalance;
+            
+            document.getElementById('teamCash').textContent = `₹${currentTeam.cash.toLocaleString()}`;
+            document.getElementById('teamPortfolio').textContent = `₹${portfolioValue.toLocaleString()}`;
+            
+            const plElement = document.getElementById('teamPL');
+            plElement.textContent = `₹${pl.toLocaleString()}`;
+            plElement.style.color = pl >= 0 ? '#10b981' : '#ef4444';
+        }
+
+        function updateHoldings() {
+            const holdingsList = document.getElementById('holdingsList');
+            const holdings = Object.entries(currentTeam.holdings || {});
+            
+            if (holdings.length === 0) {
+                holdingsList.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 13px;">No holdings yet</div>';
+            } else {
+                holdingsList.innerHTML = holdings.map(([symbol, qty]) => {
+                    const stock = allStocks.find(s => s.symbol === symbol);
+                    const value = stock ? qty * stock.price : 0;
+                    return `
+                        <div class="holdings-item">
+                            <div>
+                                <div style="font-weight: 600; color: #22d3ee; font-size: 13px;">${stock ? stock.name : symbol}</div>
+                                <div style="font-size: 12px; color: #9ca3af;">Qty: ${qty} @ ₹${stock ? stock.price.toLocaleString() : 0}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: bold; color: #10b981; font-size: 14px;">₹${value.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const shortHoldingsList = document.getElementById('shortHoldingsList');
+            const shortHoldings = Object.entries(currentTeam.shortHoldings || {});
+            
+            if (shortHoldings.length > 0) {
+                shortHoldingsList.innerHTML = `
+                    <h3 style="margin: 20px 0 12px 0; color: #f59e0b; font-size: 16px;">Short Positions</h3>
+                    ${shortHoldings.map(([symbol, qty]) => {
+                        const stock = allStocks.find(s => s.symbol === symbol);
+                        const value = stock ? qty * stock.price : 0;
+                        return `
+                            <div class="holdings-item short-position">
+                                <div>
+                                    <div style="font-weight: 600; color: #fb923c; font-size: 13px;">${stock ? stock.name : symbol}</div>
+                                    <div style="font-size: 12px; color: #9ca3af;">Short Qty: ${qty} @ ₹${stock ? stock.price.toLocaleString() : 0}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: bold; color: #ef4444; font-size: 14px;">-₹${value.toLocaleString()}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                `;
+            } else {
+                shortHoldingsList.innerHTML = '';
+            }
+        }
+
+        function updateTradingInterface() {
+            const portfolioSection = document.getElementById('portfolioAllocationSection');
+            const tradingSection = document.getElementById('tradingSection');
+            const marketTradingSection = document.getElementById('marketTradingSection');
+            const p2pTradingSection = document.getElementById('p2pTradingSection');
+            const tradeRequestsSection = document.getElementById('tradeRequestsSection');
+            const sentRequestsSection = document.getElementById('sentRequestsSection');
+            
+            if (gameConfig.phase === 'portfolio_allocation') {
+                portfolioSection.classList.remove('hidden');
+                tradingSection.classList.add('hidden');
+                tradeRequestsSection.classList.add('hidden');
+                sentRequestsSection.classList.add('hidden');
+            } else if (gameConfig.phase === 'trading') {
+                portfolioSection.classList.add('hidden');
+                tradingSection.classList.remove('hidden');
+                
+                if (gameConfig.marketTradingEnabled) {
+                    marketTradingSection.classList.remove('hidden');
+                    p2pTradingSection.classList.add('hidden');
+                    tradeRequestsSection.classList.add('hidden');
+                    sentRequestsSection.classList.add('hidden');
+                } else {
